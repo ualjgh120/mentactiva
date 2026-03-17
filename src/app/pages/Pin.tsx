@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { ArrowLeft, Delete } from 'lucide-react';
-import { getActiveUser, validateUserPin, type UserProfile } from '../utils/users';
+import {
+    getSelectedUser,
+    validateUserPin,
+    setAuthenticatedUser,
+    clearSelectedUser,
+    type UserProfile,
+} from '../utils/users';
 import { getAvatarById } from '../utils/avatars';
 
 export function Pin() {
@@ -14,8 +20,8 @@ export function Pin() {
 
     useEffect(() => {
         async function loadUser() {
-            const activeUser = await getActiveUser();
-            setUser(activeUser);
+            const selectedUser = await getSelectedUser();
+            setUser(selectedUser);
             setLoading(false);
         }
 
@@ -44,6 +50,8 @@ export function Pin() {
 
             setTimeout(() => {
                 if (isValid) {
+                    setAuthenticatedUser(user.id);
+                    clearSelectedUser();
                     navigate('/perfil');
                 } else {
                     setError('PIN incorrecto. Inténtalo de nuevo.');
@@ -58,16 +66,21 @@ export function Pin() {
         setError('');
     };
 
+    const handleBackToAccess = () => {
+        clearSelectedUser();
+        navigate('/acceso');
+    };
+
     return (
         <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
             <div className="max-w-md mx-auto px-4 sm:px-6 py-10">
-                <Link
-                    to="/acceso"
+                <button
+                    onClick={handleBackToAccess}
                     className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 transition-colors"
                 >
                     <ArrowLeft style={{ width: 18, height: 18 }} />
                     Cambiar perfil
-                </Link>
+                </button>
 
                 <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm text-center">
                     <div

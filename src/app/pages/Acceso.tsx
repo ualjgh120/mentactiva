@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, User } from 'lucide-react';
-import { getUsers, setActiveUser, type UserProfile } from '../utils/users';
+import {
+    getUsers,
+    setSelectedUser,
+    getAuthenticatedUser,
+    type UserProfile,
+} from '../utils/users';
 import { getAvatarById } from '../utils/avatars';
-import { getActiveUser } from '../utils/users';
 
 export function Acceso() {
     const navigate = useNavigate();
@@ -13,9 +17,9 @@ export function Acceso() {
 
     useEffect(() => {
         async function loadUsers() {
-            const activeUser = await getActiveUser();
+            const authenticatedUser = await getAuthenticatedUser();
 
-            if (activeUser) {
+            if (authenticatedUser) {
                 navigate('/perfil');
                 return;
             }
@@ -29,7 +33,7 @@ export function Acceso() {
     }, [navigate]);
 
     const handleSelectUser = (userId: string) => {
-        setActiveUser(userId);
+        setSelectedUser(userId);
         navigate('/pin');
     };
 

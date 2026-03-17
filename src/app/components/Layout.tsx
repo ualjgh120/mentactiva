@@ -12,7 +12,12 @@ import {
   ChevronRight,
   LogOut,
 } from 'lucide-react';
-import { clearActiveUser, getActiveUser, type UserProfile } from '../utils/users';
+import {
+  clearAuthenticatedUser,
+  clearSelectedUser,
+  getAuthenticatedUser,
+  type UserProfile,
+} from '../utils/users';
 
 const VISITOR_NAV_ITEMS = [
   { to: '/', label: 'Inicio', icon: Home },
@@ -30,7 +35,7 @@ const USER_NAV_ITEMS = [
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeUser, setActiveUser] = useState<UserProfile | null>(null);
+  const [authenticatedUser, setAuthenticatedUserState] = useState<UserProfile | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
   const location = useLocation();
@@ -39,15 +44,15 @@ export function Layout() {
   useEffect(() => {
     async function loadUser() {
       setLoadingUser(true);
-      const user = await getActiveUser();
-      setActiveUser(user);
+      const user = await getAuthenticatedUser();
+      setAuthenticatedUserState(user);
       setLoadingUser(false);
     }
 
     loadUser();
   }, [location.pathname]);
 
-  const navItems = activeUser ? USER_NAV_ITEMS : VISITOR_NAV_ITEMS;
+  const navItems = authenticatedUser ? USER_NAV_ITEMS : VISITOR_NAV_ITEMS;
 
   const isActive = (to: string) =>
     to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
@@ -57,7 +62,7 @@ export function Layout() {
 
     const protectedRoutes = ['/ejercicios', '/perfil', '/cuidador'];
 
-    if (!activeUser && protectedRoutes.includes(to)) {
+    if (!authenticatedUser && protectedRoutes.includes(to)) {
       navigate('/acceso');
       return;
     }
@@ -66,8 +71,9 @@ export function Layout() {
   };
 
   const handleLogout = () => {
-    clearActiveUser();
-    setActiveUser(null);
+    clearAuthenticatedUser();
+    clearSelectedUser();
+    setAuthenticatedUserState(null);
     setMenuOpen(false);
     navigate('/acceso');
   };
@@ -108,8 +114,8 @@ export function Layout() {
                     key={to}
                     onClick={() => handleProtectedNavigation(to)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${isActive(to)
-                      ? 'text-white'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
+                        ? 'text-white'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
                       }`}
                     style={isActive(to) ? { backgroundColor: '#2563EB' } : {}}
                   >
@@ -119,14 +125,19 @@ export function Layout() {
                 ))}
               </nav>
 
-              {activeUser ? (
-                <button
-                  onClick={handleLogout}
-                  className="ml-4 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 transition flex items-center gap-2"
-                >
-                  <LogOut style={{ width: 16, height: 16 }} />
-                  Cerrar sesión
-                </button>
+              {authenticatedUser ? (
+                <div className="ml-4 flex items-center gap-3">
+                  <span className="text-slate-600 hidden xl:block" style={{ fontSize: 14, fontWeight: 600 }}>
+                    {authenticatedUser.name}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 transition flex items-center gap-2"
+                  >
+                    <LogOut style={{ width: 16, height: 16 }} />
+                    Cerrar sesión
+                  </button>
+                </div>
               ) : (
                 <Link
                   to="/acceso"
@@ -155,8 +166,8 @@ export function Layout() {
                   key={to}
                   onClick={() => handleProtectedNavigation(to)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left ${isActive(to)
-                    ? 'text-white'
-                    : 'text-slate-700 hover:bg-slate-100'
+                      ? 'text-white'
+                      : 'text-slate-700 hover:bg-slate-100'
                     }`}
                   style={isActive(to) ? { backgroundColor: '#2563EB' } : {}}
                 >
@@ -166,14 +177,19 @@ export function Layout() {
                 </button>
               ))}
 
-              {activeUser ? (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-left text-slate-700 hover:bg-slate-100 transition-all duration-200"
-                >
-                  <LogOut style={{ width: 20, height: 20 }} />
-                  <span style={{ fontSize: 17, fontWeight: 500 }}>Cerrar sesión</span>
-                </button>
+              {authenticatedUser ? (
+                <>
+                  <div className="px-4 py-2 text-slate-500" style={{ fontSize: 14, fontWeight: 600 }}>
+                    Usuario: {authenticatedUser.name}
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-left text-slate-700 hover:bg-slate-100 transition-all duration-200"
+                  >
+                    <LogOut style={{ width: 20, height: 20 }} />
+                    <span style={{ fontSize: 17, fontWeight: 500 }}>Cerrar sesión</span>
+                  </button>
+                </>
               ) : (
                 <Link
                   to="/acceso"

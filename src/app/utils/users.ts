@@ -8,7 +8,8 @@ export interface UserProfile {
     createdAt: string;
 }
 
-const ACTIVE_USER_STORAGE_KEY = 'mentactiva_active_user';
+const SELECTED_USER_STORAGE_KEY = 'mentactiva_selected_user';
+const AUTHENTICATED_USER_STORAGE_KEY = 'mentactiva_authenticated_user';
 
 export async function getUsers(): Promise<UserProfile[]> {
     const { data, error } = await supabase
@@ -30,7 +31,11 @@ export async function getUsers(): Promise<UserProfile[]> {
     }));
 }
 
-export async function createUser(name: string, pin: string, avatar: string): Promise<UserProfile | null> {
+export async function createUser(
+    name: string,
+    pin: string,
+    avatar: string
+): Promise<UserProfile | null> {
     const { data, error } = await supabase
         .from('users')
         .insert({
@@ -79,22 +84,47 @@ export async function validateUserPin(userId: string, pin: string): Promise<bool
     return user.pin === pin.trim();
 }
 
-export function setActiveUser(userId: string): void {
-    localStorage.setItem(ACTIVE_USER_STORAGE_KEY, userId);
+/* Usuario seleccionado: solo para pasar de Acceso -> Pin */
+export function setSelectedUser(userId: string): void {
+    localStorage.setItem(SELECTED_USER_STORAGE_KEY, userId);
 }
 
-export function getActiveUserId(): string | null {
-    return localStorage.getItem(ACTIVE_USER_STORAGE_KEY);
+export function getSelectedUserId(): string | null {
+    return localStorage.getItem(SELECTED_USER_STORAGE_KEY);
 }
 
-export async function getActiveUser(): Promise<UserProfile | null> {
-    const activeUserId = getActiveUserId();
-    if (!activeUserId) return null;
-    return await getUserById(activeUserId);
+export async function getSelectedUser(): Promise<UserProfile | null> {
+    const selectedUserId = getSelectedUserId();
+    if (!selectedUserId) return null;
+    return await getUserById(selectedUserId);
 }
 
-export function clearActiveUser(): void {
-    localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
+export function clearSelectedUser(): void {
+    localStorage.removeItem(SELECTED_USER_STORAGE_KEY);
+}
+
+/* Usuario autenticado: solo tras PIN correcto */
+export function setAuthenticatedUser(userId: string): void {
+    localStorage.setItem(AUTHENTICATED_USER_STORAGE_KEY, userId);
+}
+
+export function getAuthenticatedUserId(): string | null {
+    return localStorage.getItem(AUTHENTICATED_USER_STORAGE_KEY);
+}
+
+export async function getAuthenticatedUser(): Promise<UserProfile | null> {
+    const authenticatedUserId = getAuthenticatedUserId();
+    if (!authenticatedUserId) return null;
+    return await getUserById(authenticatedUserId);
+}
+
+export function clearAuthenticatedUser(): void {
+    localStorage.removeItem(AUTHENTICATED_USER_STORAGE_KEY);
+}
+
+export function clearAllSessionData(): void {
+    clearSelectedUser();
+    clearAuthenticatedUser();
 }
 
 export async function deleteUser(userId: string): Promise<void> {
@@ -107,8 +137,11 @@ export async function deleteUser(userId: string): Promise<void> {
         console.error('Error deleting user:', error);
     }
 
-    const activeUserId = getActiveUserId();
-    if (activeUserId === userId) {
-        clearActiveUser();
+    if (getSelectedUserId() === userId) {
+        clearSelectedUser();
+    }
+
+    if (getAuthenticatedUserId() === userId) {
+        clearAuthenticatedUser();
     }
 }

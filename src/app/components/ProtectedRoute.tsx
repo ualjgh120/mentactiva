@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { getActiveUser, type UserProfile } from '../utils/users';
+import { getAuthenticatedUser, type UserProfile } from '../utils/users';
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserProfile | null>(null);
@@ -8,8 +8,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         async function loadUser() {
-            const active = await getActiveUser();
-            setUser(active);
+            const authenticatedUser = await getAuthenticatedUser();
+            setUser(authenticatedUser);
             setLoading(false);
         }
 
