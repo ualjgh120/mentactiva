@@ -65,7 +65,7 @@ export function Home() {
                 <span style={{ color: '#2563EB' }}>cada día</span>
               </h1>
               <p className="text-slate-500 mb-8 max-w-lg" style={{ fontSize: 18, lineHeight: 1.7 }}>
-                MentActiva es una plataforma de ejercicios cognitivos diseñada especialmente para
+                MenteActiva es una plataforma de ejercicios cognitivos diseñada especialmente para
                 personas mayores. Simple, accesible y siempre positiva.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -188,7 +188,7 @@ export function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-slate-800 mb-3" style={{ fontSize: 32, fontWeight: 700 }}>
-              ¿Por qué MentActiva?
+              ¿Por qué MenteActiva?
             </h2>
             <p className="text-slate-500 max-w-xl mx-auto" style={{ fontSize: 17 }}>
               Diseñada pensando en las personas mayores y sus necesidades específicas.

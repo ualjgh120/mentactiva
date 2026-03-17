@@ -322,7 +322,7 @@ export function PanelCuidador() {
         >
           <p className="text-amber-800" style={{ fontSize: 14, lineHeight: 1.6 }}>
             <strong>Nota para cuidadores:</strong> Esta información es orientativa y no tiene valor clínico.
-            MentActiva es una herramienta de apoyo al bienestar cognitivo y no sustituye a la evaluación
+            MenteActiva es una herramienta de apoyo al bienestar cognitivo y no sustituye a la evaluación
             ni al tratamiento de un profesional de la salud.
           </p>
         </div>

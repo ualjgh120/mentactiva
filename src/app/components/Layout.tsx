@@ -99,7 +99,7 @@ export function Layout() {
                   className="text-slate-800 tracking-tight"
                   style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2 }}
                 >
-                  MentActiva
+                  MenteActiva
                 </span>
                 <p className="text-slate-400 hidden sm:block" style={{ fontSize: 11, lineHeight: 1 }}>
                   Estimulación cognitiva
@@ -221,14 +221,14 @@ export function Layout() {
                 <Brain className="text-white" style={{ width: 14, height: 14 }} />
               </div>
               <span className="text-slate-700" style={{ fontWeight: 600, fontSize: 15 }}>
-                MentActiva
+                MenteActiva
               </span>
             </div>
             <p className="text-slate-400 text-center" style={{ fontSize: 13 }}>
               Esta plataforma es una herramienta de apoyo y no sustituye diagnóstico ni tratamiento médico.
             </p>
             <p className="text-slate-400" style={{ fontSize: 13 }}>
-              © 2026 MentActiva
+              © 2026 MenteActiva
             </p>
           </div>
         </div>

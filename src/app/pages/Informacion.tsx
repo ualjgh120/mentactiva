@@ -49,7 +49,7 @@ export function Informacion() {
               </h1>
               <p className="text-slate-500" style={{ fontSize: 17, lineHeight: 1.8 }}>
                 La estimulación cognitiva engloba todas las actividades que ejercitan nuestra mente:
-                recordar, pensar, calcular, resolver problemas. Con MentActiva puedes practicar
+                recordar, pensar, calcular, resolver problemas. Con MenteActiva puedes practicar
                 estas habilidades de forma fácil, segura y positiva.
               </p>
             </div>
@@ -125,7 +125,7 @@ export function Informacion() {
               </h2>
               <p className="text-slate-500 mb-6" style={{ fontSize: 17, lineHeight: 1.8 }}>
                 Las aplicaciones digitales permiten acceder a ejercicios cognitivos de forma cómoda,
-                desde casa, a cualquier hora. MentActiva aprovecha las ventajas de la tecnología
+                desde casa, a cualquier hora. MenteActiva aprovecha las ventajas de la tecnología
                 para ofrecer una experiencia accesible, segura y motivadora.
               </p>
               <p className="text-slate-500 mb-6" style={{ fontSize: 17, lineHeight: 1.8 }}>
@@ -149,7 +149,7 @@ export function Informacion() {
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#EFF6FF' }}>
                     <Users style={{ width: 20, height: 20, color: '#2563EB' }} />
                   </div>
-                  <h3 className="text-slate-800" style={{ fontSize: 18, fontWeight: 700 }}>¿Para quién es MentActiva?</h3>
+                  <h3 className="text-slate-800" style={{ fontSize: 18, fontWeight: 700 }}>¿Para quién es MenteActiva?</h3>
                 </div>
                 <ul className="space-y-2">
                   {[
@@ -199,7 +199,7 @@ export function Informacion() {
                 Aviso importante
               </h3>
               <p className="text-amber-800" style={{ fontSize: 15, lineHeight: 1.75 }}>
-                MentActiva es una herramienta de apoyo al bienestar cognitivo y <strong>no sustituye
+                MenteActiva es una herramienta de apoyo al bienestar cognitivo y <strong>no sustituye
                   en ningún caso el diagnóstico, la evaluación ni el tratamiento médico o neurológico
                   profesional.</strong> Si usted o un familiar presenta síntomas de deterioro cognitivo,
                 consulte siempre a su médico o especialista. Esta plataforma ha sido desarrollada

@@ -17,13 +17,12 @@ export function Acceso() {
 
     useEffect(() => {
         async function loadUsers() {
-            const authenticatedUser = await getAuthenticatedUser();
+            const user = await getAuthenticatedUser();
 
-            if (authenticatedUser) {
+            if (user) {
                 navigate('/perfil');
                 return;
             }
-
             const data = await getUsers();
             setUsers(data);
             setLoading(false);
@@ -38,7 +37,7 @@ export function Acceso() {
     };
 
     if (loading) {
-        return <div className="text-center py-20">Cargando MentActiva...</div>;
+        return <div className="text-center py-20">Cargando MenteActiva...</div>;
     }
 
     return (
@@ -74,7 +73,7 @@ export function Acceso() {
                             Aún no hay perfiles creados
                         </h2>
                         <p className="text-slate-500 mb-6" style={{ fontSize: 16, lineHeight: 1.6 }}>
-                            Crea el primer perfil para empezar a usar MentActiva.
+                            Crea el primer perfil para empezar a usar MenteActiva.
                         </p>
                         <button
                             onClick={() => navigate('/crear-usuario')}

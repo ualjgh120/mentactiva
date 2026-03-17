@@ -8,8 +8,8 @@ export interface UserProfile {
     createdAt: string;
 }
 
-const SELECTED_USER_STORAGE_KEY = 'mentactiva_selected_user';
-const AUTHENTICATED_USER_STORAGE_KEY = 'mentactiva_authenticated_user';
+const SELECTED_USER_STORAGE_KEY = 'menteactiva_selected_user';
+const AUTHENTICATED_USER_STORAGE_KEY = 'menteactiva_authenticated_user';
 
 export async function getUsers(): Promise<UserProfile[]> {
     const { data, error } = await supabase
