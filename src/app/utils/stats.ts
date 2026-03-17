@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { getActiveUserId } from './users';
+import { getAuthenticatedUserId } from './users';
 
 export interface Session {
   exercise: string;
@@ -16,7 +16,7 @@ export interface UserStats {
 }
 
 export async function getStats(userId?: string): Promise<UserStats> {
-  const finalUserId = userId ?? getActiveUserId();
+  const finalUserId = userId ?? getAuthenticatedUserId();
 
   if (!finalUserId) {
     return {
@@ -67,7 +67,7 @@ export async function saveSession(
   session: Omit<Session, 'date'>,
   userId?: string
 ): Promise<void> {
-  const finalUserId = userId ?? getActiveUserId();
+  const finalUserId = userId ?? getAuthenticatedUserId();
 
   if (!finalUserId) return;
 
@@ -86,7 +86,7 @@ export async function saveSession(
 }
 
 export async function clearStats(userId?: string): Promise<void> {
-  const finalUserId = userId ?? getActiveUserId();
+  const finalUserId = userId ?? getAuthenticatedUserId();
 
   if (!finalUserId) return;
 
