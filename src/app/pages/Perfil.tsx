@@ -6,7 +6,7 @@ import {
   Puzzle, Brain, Calculator,
 } from 'lucide-react';
 import { getStats, type Session } from '../utils/stats';
-import { getActiveUser, type UserProfile } from '../utils/users';
+import { getAuthenticatedUser, type UserProfile } from '../utils/users';
 import { getAvatarById } from '../utils/avatars';
 
 const EXERCISE_ICONS: Record<string, ReactNode> = {
@@ -55,7 +55,7 @@ export function Perfil() {
 
   useEffect(() => {
     async function loadData() {
-      const user = await getActiveUser();
+      const user = await getAuthenticatedUser();
 
       if (!user) {
         setActiveUser(null);
@@ -74,7 +74,7 @@ export function Perfil() {
     loadData();
 
     const refresh = async () => {
-      const user = await getActiveUser();
+      const user = await getAuthenticatedUser();
 
       if (user) {
         setActiveUser(user);

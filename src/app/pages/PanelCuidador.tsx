@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import { Users, TrendingUp, Calendar, Clock, Activity, ArrowRight } from 'lucide-react';
 import { getStats, type Session } from '../utils/stats';
-import { getActiveUser, type UserProfile } from '../utils/users';
+import { getAuthenticatedUser, type UserProfile } from '../utils/users';
 
 function buildWeeklyData(sessions: Session[]) {
   return Array.from({ length: 7 }, (_, i) => {
@@ -55,7 +55,7 @@ export function PanelCuidador() {
 
   useEffect(() => {
     async function loadData() {
-      const user = await getActiveUser();
+      const user = await getAuthenticatedUser();
 
       if (!user) {
         setActiveUser(null);
@@ -74,7 +74,7 @@ export function PanelCuidador() {
     loadData();
 
     const refresh = async () => {
-      const user = await getActiveUser();
+      const user = await getAuthenticatedUser();
 
       if (user) {
         setActiveUser(user);

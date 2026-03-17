@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
 import { AVATAR_OPTIONS } from '../utils/avatars';
-import { createUser, setActiveUser } from '../utils/users';
+import { createUser, setSelectedUser } from '../utils/users';
 
 export function CrearUsuario() {
     const navigate = useNavigate();
@@ -32,7 +32,7 @@ export function CrearUsuario() {
             return;
         }
 
-        setActiveUser(newUser.id);
+        setSelectedUser(newUser.id);
         navigate('/pin');
     };
 
