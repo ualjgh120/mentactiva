@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, User } from 'lucide-react';
 import { getUsers, setActiveUser, type UserProfile } from '../utils/users';
 import { getAvatarById } from '../utils/avatars';
+import { getActiveUser } from '../utils/users';
 
 export function Acceso() {
     const navigate = useNavigate();
@@ -12,13 +13,20 @@ export function Acceso() {
 
     useEffect(() => {
         async function loadUsers() {
+            const activeUser = await getActiveUser();
+
+            if (activeUser) {
+                navigate('/perfil');
+                return;
+            }
+
             const data = await getUsers();
             setUsers(data);
             setLoading(false);
         }
 
         loadUsers();
-    }, []);
+    }, [navigate]);
 
     const handleSelectUser = (userId: string) => {
         setActiveUser(userId);
@@ -26,7 +34,7 @@ export function Acceso() {
     };
 
     if (loading) {
-        return null;
+        return <div className="text-center py-20">Cargando MentActiva...</div>;
     }
 
     return (

@@ -44,7 +44,7 @@ export function Pin() {
 
             setTimeout(() => {
                 if (isValid) {
-                    navigate('/ejercicios');
+                    navigate('/perfil');
                 } else {
                     setError('PIN incorrecto. Inténtalo de nuevo.');
                     setPin('');
