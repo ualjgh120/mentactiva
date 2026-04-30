@@ -1,37 +1,41 @@
 import { Link } from 'react-router-dom';
-import { Brain, Layers, Star, Heart, Shield, ArrowRight, PlayCircle } from 'lucide-react';
+import { 
+  Brain, Layers, Star, Heart, Shield, ArrowRight, PlayCircle,
+  LayoutGrid, Target, Calculator, Sparkles
+} from 'lucide-react';
+import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/common/ResponsiveImage';
 
 const EXERCISES = [
   {
     to: '/memoria-visual',
-    icon: '🧩',
+    icon: LayoutGrid,
     title: 'Memoria Visual',
-    description: 'Empareja pares de cartas e imagen iguales. Entrena tu memoria y concentración.',
-    color: '#EFF6FF',
-    border: '#BFDBFE',
+    description: 'Entrena tu capacidad de reconocimiento y retención visual mediante el emparejamiento de cartas.',
+    gradient: 'from-indigo-500 to-purple-600',
+    bgLight: 'bg-indigo-50',
     badge: 'Memoria',
-    badgeColor: '#2563EB',
+    badgeColor: '#6366f1',
   },
   {
     to: '/memoria-secuencial',
-    icon: '🔵',
+    icon: Target,
     title: 'Memoria Secuencial',
-    description: 'Repite la secuencia de colores correctamente. Cada nivel añade un paso más.',
-    color: '#F0FDF4',
-    border: '#BBF7D0',
+    description: 'Mejora tu atención y memoria de trabajo repitiendo patrones y secuencias en orden creciente.',
+    gradient: 'from-emerald-500 to-blue-600',
+    bgLight: 'bg-emerald-50',
     badge: 'Atención',
-    badgeColor: '#16A34A',
+    badgeColor: '#10b981',
   },
   {
     to: '/calculo',
-    icon: '🔢',
+    icon: Calculator,
     title: 'Cálculo Mental',
-    description: 'Resuelve operaciones matemáticas sencillas. Mantén tu mente ágil y activa.',
-    color: '#FFFBEB',
-    border: '#FDE68A',
+    description: 'Agiliza tu procesamiento numérico resolviendo operaciones matemáticas de forma dinámica.',
+    gradient: 'from-amber-500 to-rose-600',
+    bgLight: 'bg-amber-50',
     badge: 'Razonamiento',
-    badgeColor: '#D97706',
+    badgeColor: '#f59e0b',
   },
 ];
 
@@ -44,74 +48,89 @@ const BENEFITS = [
 
 export function Home() {
   return (
-    <div>
+    <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
+      <section className="bg-white relative">
+        {/* Background Blobs */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/50 blur-[100px] rounded-full pointer-events-none translate-x-1/2" />
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-24 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
               <div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-                style={{ backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: 14, fontWeight: 600 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 shadow-sm border border-blue-100"
+                style={{ backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: 13, fontWeight: 700, letterSpacing: '0.02em' }}
               >
-                <Brain style={{ width: 16, height: 16 }} />
-                Estimulación cognitiva para mayores
+                <Sparkles style={{ width: 14, height: 14 }} />
+                ESTIMULACIÓN COGNITIVA PARA MAYORES
               </div>
               <h1
-                className="text-slate-900 mb-4"
-                style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 700, lineHeight: 1.15 }}
+                className="text-slate-900 mb-6 tracking-tight"
+                style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, lineHeight: 1.05 }}
               >
-                Entrena tu mente,{' '}
-                <span style={{ color: '#2563EB' }}>cada día</span>
+                Entrena tu mente, <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">cada día</span>
               </h1>
-              <p className="text-slate-500 mb-8 max-w-lg" style={{ fontSize: 18, lineHeight: 1.7 }}>
+              <p className="text-slate-500 mb-10 max-w-lg leading-relaxed" style={{ fontSize: '1.25rem' }}>
                 MenteActiva es una plataforma de ejercicios cognitivos diseñada especialmente para
                 personas mayores. Simple, accesible y siempre positiva.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  to="/acceso"
-                  className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white transition-all duration-200 hover:opacity-90 hover:scale-105 active:scale-100 shadow-md"
-                  style={{ backgroundColor: '#2563EB', fontSize: 18, fontWeight: 600 }}
-                >
-                  <PlayCircle style={{ width: 22, height: 22 }} />
-                  Comenzar ahora
-                </Link>
+              <div className="flex flex-wrap gap-5">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    to="/acceso"
+                    className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-white transition-all duration-300 shadow-[0_20px_40px_-15px_rgba(37,99,235,0.3)]"
+                    style={{ backgroundColor: '#2563EB', fontSize: 18, fontWeight: 700 }}
+                  >
+                    <PlayCircle style={{ width: 24, height: 24 }} />
+                    Comenzar ahora
+                  </Link>
+                </motion.div>
                 <Link
                   to="/informacion"
-                  className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all duration-200"
-                  style={{ fontSize: 17, fontWeight: 500 }}
+                  className="inline-flex items-center gap-2 px-8 py-5 rounded-2xl text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all duration-300"
+                  style={{ fontSize: 17, fontWeight: 600 }}
                 >
                   Más información
-                  <ArrowRight style={{ width: 18, height: 18 }} />
+                  <ArrowRight style={{ width: 20, height: 20 }} />
                 </Link>
               </div>
-            </div>
-            <div className="hidden lg:block">
-              <div className="rounded-3xl overflow-hidden shadow-xl" style={{ aspectRatio: '4/3' }}>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="hidden lg:block relative"
+            >
+              <div className="absolute -inset-4 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-[3rem] blur-2xl opacity-50 -z-10" />
+              <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white" style={{ aspectRatio: '4/3' }}>
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1758691030962-8140801d2fcc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGRlcmx5JTIwcGVyc29uJTIwdGFibGV0JTIwZGlnaXRhbCUyMGhlYWx0aCUyMGNhbG18ZW58MXx8fHwxNzczNTc4MDg3fDA&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Persona mayor usando tablet"
                   className="w-full h-full object-cover"
                 />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Stats bar */}
-      <section className="border-y border-slate-100" style={{ backgroundColor: '#F8FAFC' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-          <div className="grid grid-cols-3 gap-4 text-center">
+      <section className="border-y border-slate-100 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+          <div className="grid grid-cols-3 gap-8 text-center">
             {[
               { value: '3', label: 'Módulos de ejercicios' },
               { value: '100%', label: 'Gratuito y accesible' },
               { value: '∞', label: 'Niveles de dificultad' },
             ].map(({ value, label }) => (
               <div key={label}>
-                <p className="text-slate-900" style={{ fontSize: 28, fontWeight: 700 }}>{value}</p>
-                <p className="text-slate-500" style={{ fontSize: 13 }}>{label}</p>
+                <p className="text-slate-900 leading-none mb-2" style={{ fontSize: 36, fontWeight: 800 }}>{value}</p>
+                <p className="text-slate-500 font-semibold tracking-wide uppercase" style={{ fontSize: 11 }}>{label}</p>
               </div>
             ))}
           </div>
@@ -119,66 +138,71 @@ export function Home() {
       </section>
 
       {/* Exercises Section */}
-      <section className="py-16 sm:py-20" style={{ backgroundColor: '#F8FAFC' }}>
+      <section className="py-20 sm:py-32 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-slate-800 mb-3" style={{ fontSize: 32, fontWeight: 700 }}>
-              Nuestros ejercicios
+          <div className="text-center mb-16">
+            <h2 className="text-slate-900 mb-4 tracking-tight" style={{ fontSize: '2.5rem', fontWeight: 800 }}>
+              Disciplinas de <span className="text-blue-600">Entrenamiento</span>
             </h2>
-            <p className="text-slate-500 max-w-xl mx-auto" style={{ fontSize: 17 }}>
-              Tres módulos de entrenamiento cognitivo, cada uno enfocado en una habilidad diferente.
+            <p className="text-slate-500 max-w-2xl mx-auto leading-relaxed" style={{ fontSize: '1.15rem' }}>
+              Tres módulos especializados diseñados para estimular áreas clave de tu capacidad cognitiva
+              de forma progresiva y amena.
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {EXERCISES.map(({ to, icon, title, description, color, border, badge, badgeColor }) => (
-              <Link
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {EXERCISES.map(({ to, icon: Icon, title, description, gradient, bgLight, badge, badgeColor }) => (
+              <motion.div
                 key={to}
-                to={to}
-                className="group block bg-white rounded-2xl p-7 border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                style={{ borderColor: border }}
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.3 }}
               >
-                <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 text-3xl"
-                  style={{ backgroundColor: color }}
+                <Link
+                  to={to}
+                  className="group block bg-white rounded-[2.5rem] p-8 border border-slate-100 transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)]"
                 >
-                  {icon}
-                </div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span
-                    className="px-3 py-1 rounded-full text-white"
-                    style={{ backgroundColor: badgeColor, fontSize: 12, fontWeight: 600 }}
+                  <div
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-md transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 bg-gradient-to-br ${gradient}`}
                   >
-                    {badge}
-                  </span>
-                </div>
-                <h3 className="text-slate-800 mb-2" style={{ fontSize: 20, fontWeight: 700 }}>
-                  {title}
-                </h3>
-                <p className="text-slate-500 mb-5" style={{ fontSize: 15, lineHeight: 1.6 }}>
-                  {description}
-                </p>
-                <div
-                  className="inline-flex items-center gap-2 transition-colors"
-                  style={{ color: badgeColor, fontSize: 15, fontWeight: 600 }}
-                >
-                  Jugar ahora
-                  <ArrowRight
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                    style={{ width: 16, height: 16 }}
-                  />
-                </div>
-              </Link>
+                    <Icon className="text-white" style={{ width: 28, height: 28 }} />
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span
+                      className="px-3 py-1 rounded-full text-white uppercase tracking-widest"
+                      style={{ backgroundColor: badgeColor, fontSize: 10, fontWeight: 800 }}
+                    >
+                      {badge}
+                    </span>
+                  </div>
+                  <h3 className="text-slate-900 mb-3" style={{ fontSize: '1.5rem', fontWeight: 800 }}>
+                    {title}
+                  </h3>
+                  <p className="text-slate-500 mb-8 leading-relaxed" style={{ fontSize: 15 }}>
+                    {description}
+                  </p>
+                  <div
+                    className="inline-flex items-center gap-2 font-bold text-sm transition-colors group-hover:gap-3"
+                    style={{ color: badgeColor }}
+                  >
+                    EMPEZAR A ENTRENAR
+                    <ArrowRight
+                      style={{ width: 18, height: 18 }}
+                    />
+                  </div>
+                </Link>
+              </motion.div>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link
-              to="/acceso"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white transition-all duration-200 hover:opacity-90 shadow"
-              style={{ backgroundColor: '#2563EB', fontSize: 17, fontWeight: 600 }}
-            >
-              Ver todos los ejercicios
-              <ArrowRight style={{ width: 18, height: 18 }} />
-            </Link>
+          <div className="text-center mt-16">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/ejercicios"
+                className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-white transition-all duration-300 shadow-xl shadow-blue-100"
+                style={{ backgroundColor: '#2563EB', fontSize: 18, fontWeight: 700 }}
+              >
+                Ver todos los ejercicios
+                <ArrowRight style={{ width: 22, height: 22 }} />
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>

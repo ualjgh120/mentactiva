@@ -1,7 +1,11 @@
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, CheckCircle, XCircle } from 'lucide-react';
+import { 
+  ArrowLeft, RotateCcw, CheckCircle, XCircle, Calculator, 
+  Sparkles, Brain, BarChart2, ChevronRight, Target
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';
 
 type Difficulty = 'facil' | 'medio' | 'dificil';
@@ -163,46 +167,97 @@ export function CalculoBasico() {
   // ── Select screen ────────────────────────────────────────────────────────
   if (phase === 'select') {
     return (
-      <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-          <Link to="/ejercicios" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 transition-colors">
-            <ArrowLeft style={{ width: 18, height: 18 }} />
-            Volver a ejercicios
-          </Link>
-          <div className="text-center mb-10">
-            <div className="text-6xl mb-4">🔢</div>
-            <h1 className="text-slate-800 mb-3" style={{ fontSize: 34, fontWeight: 700 }}>Cálculo Mental</h1>
-            <p className="text-slate-500 max-w-md mx-auto" style={{ fontSize: 17, lineHeight: 1.6 }}>
-              Resuelve {TOTAL_QUESTIONS} operaciones matemáticas eligiendo la respuesta correcta.
-              ¡Sin prisa, piensa bien!
-            </p>
+      <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-amber-400/10 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-rose-400/10 blur-[120px] rounded-full" />
+        </div>
+
+        <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-12">
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+            <Link
+              to="/ejercicios"
+              className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-12 transition-all font-semibold group"
+            >
+              <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-100 group-hover:bg-amber-50 group-hover:border-amber-100 group-hover:text-amber-600 transition-all">
+                <ArrowLeft style={{ width: 16, height: 16 }} />
+              </div>
+              Volver a ejercicios
+            </Link>
+          </motion.div>
+
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-20 h-20 bg-gradient-to-br from-amber-500 to-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-amber-500/20"
+            >
+              <Calculator className="text-white" style={{ width: 40, height: 40 }} />
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 shadow-sm border border-amber-100 bg-white"
+                style={{ color: '#f59e0b', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em' }}
+              >
+                <Sparkles style={{ width: 12, height: 12 }} />
+                RAZONAMIENTO NUMÉRICO
+              </div>
+              <h1 className="text-slate-900 mb-4 tracking-tight" style={{ fontSize: '2.5rem', fontWeight: 800 }}>
+                Cálculo Mental
+              </h1>
+              <p className="text-slate-500 max-w-md mx-auto leading-relaxed" style={{ fontSize: '1.1rem' }}>
+                Resuelve {TOTAL_QUESTIONS} operaciones matemáticas seleccionando la respuesta correcta.
+                ¡Agilidad y precisión!
+              </p>
+            </motion.div>
           </div>
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-            <h2 className="text-slate-700 mb-6 text-center" style={{ fontSize: 22, fontWeight: 700 }}>Elige la dificultad</h2>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-2xl shadow-amber-500/5"
+          >
+            <h2 className="text-slate-800 mb-8 text-center" style={{ fontSize: 20, fontWeight: 800 }}>
+              Selecciona tu nivel
+            </h2>
+
             <div className="grid gap-4">
-              {(['facil', 'medio', 'dificil'] as Difficulty[]).map((d) => (
-                <button
+              {(['facil', 'medio', 'dificil'] as Difficulty[]).map((d, idx) => (
+                <motion.button
                   key={d}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + idx * 0.1 }}
                   onClick={() => startGame(d)}
-                  className="w-full flex items-center justify-between px-6 py-5 rounded-2xl border-2 text-left transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 bg-white"
-                  style={{ borderColor: DIFFICULTY_COLOR[d] + '60' }}
+                  className="group w-full flex items-center justify-between px-6 py-5 rounded-[1.5rem] border border-slate-100 text-left transition-all duration-300 hover:shadow-lg bg-white"
                 >
-                  <div>
-                    <p className="text-slate-800" style={{ fontSize: 20, fontWeight: 700 }}>{DIFFICULTY_LABEL[d]}</p>
-                    <p className="text-slate-500" style={{ fontSize: 15 }}>
-                      {d === 'facil' ? 'Sumas hasta 18' : d === 'medio' ? 'Sumas y restas hasta 40' : 'Sumas, restas y multiplicaciones'}
-                    </p>
+                  <div className="flex items-center gap-4">
+                    <div 
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white shadow-md" 
+                      style={{ backgroundColor: DIFFICULTY_COLOR[d] }}
+                    >
+                      {idx + 1}
+                    </div>
+                    <div>
+                      <p className="text-slate-900" style={{ fontSize: 18, fontWeight: 700 }}>
+                        {DIFFICULTY_LABEL[d]}
+                      </p>
+                      <p className="text-slate-400 font-medium" style={{ fontSize: 14 }}>
+                        {d === 'facil' ? 'Operaciones básicas' : d === 'medio' ? 'Cifras intermedias' : 'Cifras avanzadas'}
+                      </p>
+                    </div>
                   </div>
-                  <span
-                    className="px-4 py-2 rounded-xl text-white"
-                    style={{ backgroundColor: DIFFICULTY_COLOR[d], fontSize: 15, fontWeight: 600 }}
-                  >
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-400 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300 font-bold text-sm uppercase">
                     Jugar
-                  </span>
-                </button>
+                    <ChevronRight style={{ width: 16, height: 16 }} />
+                  </div>
+                </motion.button>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     );
@@ -212,44 +267,85 @@ export function CalculoBasico() {
   if (phase === 'finished') {
     const pct = Math.round((score / TOTAL_QUESTIONS) * 100);
     return (
-      <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-        <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-          <div className="text-7xl mb-5">{pct >= 80 ? '🏆' : pct >= 50 ? '😊' : '💪'}</div>
-          <h1 className="text-slate-800 mb-2" style={{ fontSize: 34, fontWeight: 700 }}>
-            {pct >= 80 ? '¡Fantástico!' : pct >= 50 ? '¡Bien hecho!' : '¡Sigue practicando!'}
-          </h1>
-          <p className="text-slate-500 mb-8" style={{ fontSize: 18 }}>
-            Has acertado {score} de {TOTAL_QUESTIONS} preguntas.
-          </p>
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-slate-600" style={{ fontSize: 16 }}>Puntuación</span>
-              <span className="text-slate-800" style={{ fontSize: 22, fontWeight: 700 }}>{score}/{TOTAL_QUESTIONS}</span>
+      <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-amber-400/10 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-rose-400/10 blur-[120px] rounded-full" />
+        </div>
+
+        <div className="relative z-10 max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="text-7xl mb-8"
+          >
+            {pct >= 80 ? '🏆' : pct >= 50 ? '🌟' : '💪'}
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <h1 className="text-slate-900 mb-2" style={{ fontSize: '2.5rem', fontWeight: 800 }}>
+              {pct >= 80 ? '¡Fantástico!' : pct >= 50 ? '¡Bien hecho!' : '¡Sigue así!'}
+            </h1>
+            <p className="text-slate-500 mb-10" style={{ fontSize: '1.2rem' }}>
+              Has completado el entrenamiento de cálculo con un resultado notable.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-2xl shadow-amber-500/5 mb-10"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-slate-500 font-bold uppercase tracking-wider" style={{ fontSize: 13 }}>Puntuación Final</span>
+              <span className="text-slate-900" style={{ fontSize: 28, fontWeight: 800 }}>{score} / {TOTAL_QUESTIONS}</span>
             </div>
-            <div className="bg-slate-100 rounded-full h-4 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? '#16A34A' : pct >= 50 ? '#D97706' : '#2563EB' }}
+            
+            <div className="relative bg-slate-100 rounded-full h-4 overflow-hidden mb-4">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+                className="h-full rounded-full shadow-inner"
+                style={{ backgroundColor: pct >= 80 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#2563eb' }}
               />
             </div>
-            <p className="text-slate-500 mt-2 text-right" style={{ fontSize: 14 }}>{pct}%</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            
+            <div className="flex justify-between items-center text-slate-400 font-bold" style={{ fontSize: 14 }}>
+              <span>0%</span>
+              <span className="text-slate-800" style={{ fontSize: 18 }}>{pct}%</span>
+              <span>100%</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
             <button
               onClick={() => startGame(difficulty)}
-              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white transition-all hover:opacity-90"
-              style={{ backgroundColor: '#2563EB', fontSize: 17, fontWeight: 600 }}
+              className="flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-white transition-all hover:scale-105 shadow-xl shadow-amber-500/20"
+              style={{ backgroundColor: '#f59e0b', fontSize: 18, fontWeight: 800 }}
             >
-              <RotateCcw style={{ width: 18, height: 18 }} /> Jugar otra vez
+              <RotateCcw style={{ width: 22, height: 22 }} />
+              Repetir nivel
             </button>
             <button
               onClick={() => setPhase('select')}
-              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all"
-              style={{ fontSize: 17, fontWeight: 600 }}
+              className="flex items-center justify-center gap-3 px-8 py-5 rounded-2xl border border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 transition-all font-bold bg-white/50"
+              style={{ fontSize: 18 }}
             >
-              Cambiar dificultad
+              Cambiar nivel
             </button>
-          </div>
+          </motion.div>
         </div>
       </div>
     );
@@ -258,98 +354,148 @@ export function CalculoBasico() {
   // ── Playing ──────────────────────────────────────────────────────────────
   if (!problem) return null;
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-      <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
+    <div className="relative min-h-screen bg-[#F8FAFC]">
+      <div className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => setPhase('select')}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors"
+            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-all font-semibold group"
           >
-            <ArrowLeft style={{ width: 18, height: 18 }} />
+            <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-100 group-hover:bg-slate-50 group-hover:border-amber-100 transition-all">
+              <ArrowLeft style={{ width: 16, height: 16 }} />
+            </div>
             Salir
           </button>
-          <span className="px-3 py-1 rounded-full text-white" style={{ backgroundColor: DIFFICULTY_COLOR[difficulty], fontSize: 13, fontWeight: 600 }}>
+          <div 
+            className="px-4 py-1.5 rounded-full text-white shadow-md shadow-amber-500/10 uppercase tracking-wider" 
+            style={{ backgroundColor: DIFFICULTY_COLOR[difficulty], fontSize: 11, fontWeight: 800 }}
+          >
             {DIFFICULTY_LABEL[difficulty]}
-          </span>
+          </div>
         </div>
 
-        {/* Progress */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 mb-6">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-slate-600" style={{ fontSize: 15 }}>Pregunta {question + 1} de {TOTAL_QUESTIONS}</span>
-            <span className="text-slate-800" style={{ fontSize: 16, fontWeight: 700 }}>✅ {score} aciertos</span>
+        {/* Progress Card */}
+        <div className="bg-white/80 backdrop-blur-md rounded-[2rem] p-6 border border-slate-100 shadow-sm mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="text-slate-400 font-bold uppercase" style={{ fontSize: 12 }}>Pregunta</span>
+              <span className="text-slate-900 font-extrabold" style={{ fontSize: 16 }}>{question + 1} / {TOTAL_QUESTIONS}</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-full">
+              <CheckCircle style={{ width: 14, height: 14, color: '#10b981' }} />
+              <span className="text-green-700 font-bold" style={{ fontSize: 14 }}>{score} aciertos</span>
+            </div>
           </div>
-          <div className="bg-slate-100 rounded-full h-3 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${((question + 1) / TOTAL_QUESTIONS) * 100}%`, backgroundColor: '#2563EB' }}
+          <div className="bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${((question + 1) / TOTAL_QUESTIONS) * 100}%` }}
+              className="h-full rounded-full"
+              style={{ backgroundColor: '#f59e0b' }}
             />
           </div>
         </div>
 
-        {/* Problem */}
-        <div
-          className="bg-white rounded-3xl border-2 flex items-center justify-center mb-6 shadow-sm"
-          style={{ height: 160, borderColor: '#BFDBFE' }}
+        {/* Problem Display */}
+        <motion.div
+          key={problem.display}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-[2.5rem] border-2 flex items-center justify-center mb-8 shadow-xl shadow-amber-500/5 relative overflow-hidden"
+          style={{ height: 180, borderColor: '#FEF3C7' }}
         >
-          <p className="text-slate-800" style={{ fontSize: 'clamp(44px, 10vw, 64px)', fontWeight: 800, letterSpacing: 4 }}>
-            {problem.display} = ?
+          <div className="absolute top-0 left-0 w-full h-1 bg-amber-100/50" />
+          <p className="text-slate-900" style={{ fontSize: 'clamp(3.5rem, 12vw, 4.5rem)', fontWeight: 900, letterSpacing: '-0.02em' }}>
+            {problem.display} <span className="text-amber-500">=</span> ?
           </p>
+        </motion.div>
+
+        {/* Feedback Area */}
+        <div className="h-16 flex items-center justify-center mb-6">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={feedback ? { scale: 1, opacity: 1 } : {}}
+          >
+            {feedback && (
+              <div
+                className="flex items-center gap-3 px-6 py-3 rounded-full shadow-lg shadow-black/5"
+                style={{
+                  backgroundColor: isCorrect ? '#F0FDF4' : '#FEF2F2',
+                  border: `1px solid ${isCorrect ? '#BBF7D0' : '#FECACA'}`,
+                  color: isCorrect ? '#15803D' : '#B91C1C',
+                }}
+              >
+                {isCorrect
+                  ? <CheckCircle style={{ width: 20, height: 20 }} strokeWidth={3} />
+                  : <XCircle style={{ width: 20, height: 20 }} strokeWidth={3} />
+                }
+                <span style={{ fontSize: 18, fontWeight: 800 }}>{feedback}</span>
+              </div>
+            )}
+          </motion.div>
         </div>
 
-        {/* Feedback */}
-        <div className="h-12 flex items-center justify-center mb-4">
-          {feedback && (
-            <div
-              className="flex items-center gap-2 px-5 py-2 rounded-full"
-              style={{
-                backgroundColor: isCorrect ? '#F0FDF4' : '#FEF2F2',
-                color: isCorrect ? '#15803D' : '#B91C1C',
-              }}
-            >
-              {isCorrect
-                ? <CheckCircle style={{ width: 18, height: 18 }} />
-                : <XCircle style={{ width: 18, height: 18 }} />
-              }
-              <span style={{ fontSize: 16, fontWeight: 700 }}>{feedback}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Answer options */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Answer Options */}
+        <div className="grid grid-cols-2 gap-4 mb-10">
           {options.map((opt) => {
             const isSelected = selected === opt;
             const isRight = opt === problem.answer;
-            let bg = '#FFFFFF';
-            let border = '#E2E8F0';
-            let textColor = '#1E293B';
-            if (selected !== null) {
-              if (isRight) { bg = '#F0FDF4'; border = '#22C55E'; textColor = '#15803D'; }
-              else if (isSelected && !isRight) { bg = '#FEF2F2'; border = '#EF4444'; textColor = '#B91C1C'; }
-            }
+            
             return (
-              <button
+              <motion.button
                 key={opt}
+                whileHover={selected === null ? { scale: 1.03, y: -2 } : {}}
+                whileTap={selected === null ? { scale: 0.97 } : {}}
                 onClick={() => handleAnswer(opt)}
                 disabled={selected !== null}
-                className="rounded-2xl border-2 transition-all duration-200 flex items-center justify-center"
+                className="rounded-[2rem] border-2 transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-sm"
                 style={{
-                  height: 88,
-                  backgroundColor: bg,
-                  borderColor: border,
-                  color: textColor,
-                  fontSize: 'clamp(24px, 5vw, 34px)',
-                  fontWeight: 800,
-                  cursor: selected !== null ? 'default' : 'pointer',
-                  transform: isSelected ? 'scale(0.97)' : 'scale(1)',
+                  height: 100,
+                  backgroundColor: isSelected ? (isRight ? '#F0FDF4' : '#FEF2F2') : (selected !== null && isRight ? '#F0FDF4' : '#FFFFFF'),
+                  borderColor: isSelected ? (isRight ? '#22C55E' : '#EF4444') : (selected !== null && isRight ? '#22C55E' : '#F1F5F9'),
+                  color: isSelected ? (isRight ? '#15803D' : '#B91C1C') : (selected !== null && isRight ? '#15803D' : '#1e293b'),
                 }}
               >
-                {opt}
-              </button>
+                {selected === null && (
+                  <div className="absolute inset-0 bg-amber-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                )}
+                <span className="relative z-10" style={{ fontSize: '2.5rem', fontWeight: 900 }}>
+                  {opt}
+                </span>
+                
+                {isSelected && isRight && (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3 text-green-500">
+                    <CheckCircle style={{ width: 16, height: 16 }} strokeWidth={3} />
+                  </motion.div>
+                )}
+              </motion.button>
             );
           })}
+        </div>
+
+        {/* Game Guide */}
+        <div className="bg-white/50 backdrop-blur-sm rounded-[2rem] p-8 border border-slate-200/60 shadow-sm">
+          <div className="flex items-center gap-2 mb-4 text-slate-800">
+            <Brain style={{ width: 20, height: 20, color: '#f59e0b' }} />
+            <p style={{ fontSize: 18, fontWeight: 800 }}>Trucos rápidos</p>
+          </div>
+          <ul className="space-y-4">
+            {[
+              'Visualiza los números en tu mente antes de mirar las opciones.',
+              'No te precipites, tienes tiempo para pensar cada respuesta.',
+              'Practica diariamente para mejorar tu agilidad mental.',
+              'Comienza por el nivel fácil para ganar confianza.'
+            ].map((text, i) => (
+              <li key={i} className="flex gap-3 text-slate-500 leading-relaxed" style={{ fontSize: 15 }}>
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">
+                  {i + 1}
+                </span>
+                {text}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
