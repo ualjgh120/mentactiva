@@ -109,8 +109,8 @@ export function Home() {
               <div className="absolute -inset-4 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-[3rem] blur-2xl opacity-50 -z-10" />
               <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white" style={{ aspectRatio: '4/3' }}>
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1758691030962-8140801d2fcc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGRlcmx5JTIwcGVyc29uJTIwdGFibGV0JTIwZGlnaXRhbCUyMGhlYWx0aCUyMGNhbG18ZW58MXx8fHwxNzczNTc4MDg3fDA&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Persona mayor usando tablet"
+                  src="/img_inicio.jpg"
+                  alt="MenteActiva Entrenamiento Cognitivo"
                   className="w-full h-full object-cover"
                 />
               </div>
