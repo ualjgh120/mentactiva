@@ -90,14 +90,16 @@ export function Home() {
                     Comenzar ahora
                   </Link>
                 </motion.div>
-                <Link
-                  to="/informacion"
-                  className="inline-flex items-center gap-2 px-8 py-5 rounded-2xl text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all duration-300"
-                  style={{ fontSize: 17, fontWeight: 600 }}
-                >
-                  Más información
-                  <ArrowRight style={{ width: 20, height: 20 }} />
-                </Link>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    to="/informacion"
+                    className="inline-flex items-center gap-2 px-8 py-5 rounded-2xl text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all duration-300"
+                    style={{ fontSize: 17, fontWeight: 600 }}
+                  >
+                    Más información
+                    <ArrowRight style={{ width: 20, height: 20 }} />
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
             <motion.div 
