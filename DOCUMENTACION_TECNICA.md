@@ -40,6 +40,7 @@ menteactiva/
 │
 ├── public/
 │   ├── img_inicio.jpg        → Imagen hero de la página de inicio (~365KB)
+│   ├── info_img.jpg          → Imagen para la sección de información (~2MB)
 │   └── menteactiva-favicon.svg → Favicon SVG del proyecto
 │
 ├── services/

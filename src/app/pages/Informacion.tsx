@@ -56,7 +56,7 @@ export function Informacion() {
             <div className="hidden lg:block">
               <div className="rounded-3xl overflow-hidden shadow-lg" style={{ aspectRatio: '16/10' }}>
                 <ImageWithFallback
-                  src="/info_img.jpeg"
+                  src="/info_img.jpg"
                   alt="Estimulación cognitiva"
                   className="w-full h-full object-cover"
                 />
