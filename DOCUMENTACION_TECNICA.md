@@ -113,7 +113,7 @@ menteactiva/
 
 ## MODELO DE DATOS (Supabase/PostgreSQL):
 
-**Tabla `users`:** `id` (uuid PK auto), `created_at` (timestamptz), `name` (text), `pin` (text, 4 dígitos almacenado en plano), `avatar` (text, referencia al id del catálogo de avatares: 'abuela-1', 'abuelo-1', 'persona-1'...).
+**Tabla `users`:** `id`, `name`, `pin` (hash bcrypt coste 10), `avatar`, `created_at`.
 
 **Tabla `sessions`:** `id` (uuid PK auto), `created_at` (timestamptz), `user_id` (uuid FK → users.id), `exercise` (text: 'memoria-visual' | 'memoria-secuencial' | 'calculo'), `exercise_name` (text: nombre legible), `score` (integer), `level` (integer), `duration` (integer, minutos).
 
@@ -141,9 +141,10 @@ Todas las rutas son hijas de `Layout`, que actúa como wrapper con header, naveg
 
 ## FUNCIONALIDADES PRINCIPALES:
 
-**Autenticación por PIN de 4 dígitos:** Pantalla `/acceso` carga todos los perfiles de Supabase (tabla `users`) → los muestra en grid con avatar emoji y nombre → al pulsar un perfil, guarda el `userId` en `sessionStorage` (`menteactiva_selected_user`) → navega a `/pin` → teclado numérico virtual con grid 3×4 (1-9, vacío, 0, borrar) + listener `window.keydown` para teclado físico → al completar 4 dígitos, ejecuta `validateUserPin()` que compara pin en plano → si válido: `setAuthenticatedUser(userId)` en `sessionStorage` (`menteactiva_authenticated_user`) + `clearSelectedUser()` + `navigate('/perfil')` → si inválido: muestra error + resetea PIN. `ProtectedRoute` verifica sesión con `getAuthenticatedUser()` (busca userId en `sessionStorage` → `getUserById()` en Supabase) en cada renderizado.
+- **Autenticación:** Sistema de doble paso (Selección de Avatar → PIN de 4 dígitos). Verificación segura mediante comparación de hashes `bcrypt.compareSync()`.
+- **Almacenamiento:** Uso de `sessionStorage` para mantener la sesión activa solo mientras la pestaña del navegador esté abierta, evitando accesos no autorizados en dispositivos compartidos. PIN cifrado con coste 10 antes de persistir en Supabase.
 
-**Creación de perfiles:** Formulario único con 3 campos: nombre (mínimo 2 caracteres), PIN (validación regex `^\d{4}$`, input con `inputMode="numeric"` y `maxLength={4}`, filtra no-dígitos con `replace(/\D/g, '')`), avatar (selector visual de 6 opciones emoji con indicador de selección). Al submit: `createUser(name, pin, avatar)` → INSERT en tabla `users` → `setSelectedUser(newUser.id)` → navega a `/pin` para primer acceso.
+**Creación de perfiles:** Formulario único con 3 campos: nombre (mínimo 2 caracteres), PIN (validación regex `^\d{4}$`, input con `inputMode="numeric"` y `maxLength={4}`, filtra no-dígitos con `replace(/\D/g, '')`), avatar (selector visual de 6 opciones emoji con indicador de selección). Al submit: `createUser(name, pin, avatar)` (PIN hasheado con bcrypt coste 10) → INSERT en tabla `users` → `setSelectedUser(newUser.id)` → navega a `/pin` para primer acceso.
 
 **Memoria Visual:** 3 niveles de dificultad (4/6/8 parejas de cartas). `createDeck(pairCount)` genera array de CardItem con `shuffleArray()` (sort random). Estado: `cards: CardItem[]`, `selectedIds: number[]`, `moves: number`, `matches: number`, `isChecking: boolean` (bloqueo UI), `completed: boolean`. Lógica: `handleCardClick()` voltea carta (flipped: true) + añade a selectedIds → `useEffect` detecta `selectedIds.length === 2` → compara valores → si coinciden: `matched: true` + incrementa matches + timeout 700ms → si no coinciden: flip back + timeout 900ms. Al completar todas las parejas: `setCompleted(true)` + `confetti()` con 100 partículas + `saveSession()` a Supabase. Grid responsivo con `gridTemplateColumns: repeat(4, minmax(0, 1fr))`.
 

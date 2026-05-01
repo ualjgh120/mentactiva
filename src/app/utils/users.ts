@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { supabase } from '../lib/supabase';
 
 export interface UserProfile {
@@ -36,11 +37,14 @@ export async function createUser(
     pin: string,
     avatar: string
 ): Promise<UserProfile | null> {
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPin = bcrypt.hashSync(pin.trim(), salt);
+
     const { data, error } = await supabase
         .from('users')
         .insert({
             name: name.trim(),
-            pin: pin.trim(),
+            pin: hashedPin,
             avatar,
         })
         .select()
@@ -81,7 +85,7 @@ export async function getUserById(id: string): Promise<UserProfile | null> {
 export async function validateUserPin(userId: string, pin: string): Promise<boolean> {
     const user = await getUserById(userId);
     if (!user) return false;
-    return user.pin === pin.trim();
+    return bcrypt.compareSync(pin.trim(), user.pin);
 }
 
 /* Usuario seleccionado: solo para pasar de Acceso -> Pin */
