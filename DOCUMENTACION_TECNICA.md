@@ -114,9 +114,9 @@ menteactiva/
 
 ## MODELO DE DATOS (Supabase/PostgreSQL):
 
-**Tabla `users`:** `id`, `name`, `pin` (hash bcrypt coste 10), `avatar`, `created_at`.
+**Tabla `users`:** `id`, `name`, `pin` (hash bcrypt coste 10), `avatar`, `created_at`. Políticas RLS activas para SELECT e INSERT público.
 
-**Tabla `sessions`:** `id` (uuid PK auto), `created_at` (timestamptz), `user_id` (uuid FK → users.id), `exercise` (text: 'memoria-visual' | 'memoria-secuencial' | 'calculo'), `exercise_name` (text: nombre legible), `score` (integer), `level` (integer), `duration` (integer, minutos).
+**Tabla `sessions`:** `id` (uuid PK auto), `created_at` (timestamptz), `user_id` (uuid FK → users.id), `exercise` (text: 'memoria-visual' | 'memoria-secuencial' | 'calculo'), `exercise_name` (text: nombre legible), `score` (integer), `level` (integer), `duration` (integer, minutos). Políticas RLS activas para SELECT e INSERT público.
 
 ---
 
