@@ -56,7 +56,7 @@ export function Informacion() {
             <div className="hidden lg:block">
               <div className="rounded-3xl overflow-hidden shadow-lg" style={{ aspectRatio: '16/10' }}>
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1761637755331-562c6529ace6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmFpbiUyMGNvZ25pdGl2ZSUyMGV4ZXJjaXNlJTIwbWVudGFsJTIwYWN0aXZpdHl8ZW58MXx8fHwxNzczNTc4MDg3fDA&ixlib=rb-4.1.0&q=80&w=1080"
+                  src="/info_img.jpeg"
                   alt="Estimulación cognitiva"
                   className="w-full h-full object-cover"
                 />
