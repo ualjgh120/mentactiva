@@ -86,11 +86,11 @@ export async function validateUserPin(userId: string, pin: string): Promise<bool
 
 /* Usuario seleccionado: solo para pasar de Acceso -> Pin */
 export function setSelectedUser(userId: string): void {
-    localStorage.setItem(SELECTED_USER_STORAGE_KEY, userId);
+    sessionStorage.setItem(SELECTED_USER_STORAGE_KEY, userId);
 }
 
 export function getSelectedUserId(): string | null {
-    return localStorage.getItem(SELECTED_USER_STORAGE_KEY);
+    return sessionStorage.getItem(SELECTED_USER_STORAGE_KEY);
 }
 
 export async function getSelectedUser(): Promise<UserProfile | null> {
@@ -100,16 +100,16 @@ export async function getSelectedUser(): Promise<UserProfile | null> {
 }
 
 export function clearSelectedUser(): void {
-    localStorage.removeItem(SELECTED_USER_STORAGE_KEY);
+    sessionStorage.removeItem(SELECTED_USER_STORAGE_KEY);
 }
 
 /* Usuario autenticado: solo tras PIN correcto */
 export function setAuthenticatedUser(userId: string): void {
-    localStorage.setItem(AUTHENTICATED_USER_STORAGE_KEY, userId);
+    sessionStorage.setItem(AUTHENTICATED_USER_STORAGE_KEY, userId);
 }
 
 export function getAuthenticatedUserId(): string | null {
-    return localStorage.getItem(AUTHENTICATED_USER_STORAGE_KEY);
+    return sessionStorage.getItem(AUTHENTICATED_USER_STORAGE_KEY);
 }
 
 export async function getAuthenticatedUser(): Promise<UserProfile | null> {
@@ -119,7 +119,7 @@ export async function getAuthenticatedUser(): Promise<UserProfile | null> {
 }
 
 export function clearAuthenticatedUser(): void {
-    localStorage.removeItem(AUTHENTICATED_USER_STORAGE_KEY);
+    sessionStorage.removeItem(AUTHENTICATED_USER_STORAGE_KEY);
 }
 
 export function clearAllSessionData(): void {
