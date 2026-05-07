@@ -7,6 +7,7 @@ import {
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';
+import { generateOptions } from '../utils/gameUtils';
 
 type Difficulty = 'facil' | 'medio' | 'dificil';
 type Operator = '+' | '−' | '×';
@@ -63,22 +64,7 @@ function generateProblem(difficulty: Difficulty): Problem {
   return { num1, num2, operator, answer, display: `${num1} ${operator} ${num2}` };
 }
 
-function generateOptions(answer: number, difficulty: Difficulty): number[] {
-  const spread = difficulty === 'facil' ? 5 : difficulty === 'medio' ? 10 : 20;
-  const opts = new Set<number>([answer]);
-  let attempts = 0;
-  while (opts.size < 4 && attempts < 100) {
-    attempts++;
-    const delta = Math.floor(Math.random() * spread) + 1;
-    const sign = Math.random() > 0.5 ? 1 : -1;
-    const opt = answer + sign * delta;
-    if (opt > 0 && opt !== answer) opts.add(opt);
-  }
-  // Fallback fill
-  let fill = 1;
-  while (opts.size < 4) { if (!opts.has(fill)) opts.add(fill); fill++; }
-  return [...opts].sort(() => Math.random() - 0.5);
-}
+// La función generateOptions ahora se importa de ../utils/gameUtils
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
   facil: 'Fácil',

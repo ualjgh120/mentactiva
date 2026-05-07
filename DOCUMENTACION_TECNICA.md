@@ -14,6 +14,7 @@
 - **Routing:** React Router DOM 7 (createBrowserRouter)
 - **Iconos:** Lucide React 0.487
 - **Formularios:** React Hook Form 7.55
+- **Pruebas:** Vitest 1.3 + JSDOM + React Testing Library (38 tests automatizados)
 - **Despliegue:** Vercel (CI/CD automático desde GitHub, rewrites SPA)
 - **Tipado de entorno:** vite-env.d.ts con interfaces ImportMetaEnv para VITE_SUPABASE_URL y VITE_SUPABASE_PUBLISHABLE_KEY
 
@@ -26,14 +27,15 @@ menteactiva/
 ├── .env.local                → Variables de entorno (Supabase URL + anon key)
 ├── .gitignore                → Excluye node_modules, dist, .env, .env.local, .DS_Store
 ├── ATTRIBUTIONS.md           → Licencias: shadcn/ui (MIT), Unsplash (media)
+├── DOCUMENTACION_TECNICA.md  → Este documento
 ├── index.html                → Punto de entrada HTML (lang="es", favicon SVG, #root)
-├── package.json              → Nombre: "menteactiva", versión 0.0.1, scripts dev/build/preview
+├── package.json              → Nombre: "menteactiva", versión 0.0.1, scripts dev/build/preview/test
 ├── package-lock.json         → Lockfile de dependencias (~204KB)
 ├── postcss.config.mjs        → Vacío: Tailwind v4 gestiona PostCSS automáticamente
 ├── tsconfig.json             → Target ESNext, strict: true, JSX react-jsx, alias @/ → src/
-├── tsconfig.node.json        → Configuración aislada para vite.config.ts
+├── tsconfig.node.json        → Configuración aislada para vite.config.ts (Bundler resolution)
 ├── vercel.json               → Rewrites: todas las rutas → /index.html (SPA routing)
-├── vite.config.ts            → Plugins: react() + tailwindcss(), alias @ → ./src, assetsInclude SVG/CSV
+├── vite.config.ts            → Configuración unificada: Vite + Vitest + Plugins (tailwindcss, react)
 │
 ├── guidelines/
 │   └── Guidelines.md         → Plantilla de reglas de diseño (botones, layouts, accesibilidad)
@@ -59,6 +61,15 @@ menteactiva/
     │   ├── fonts.css         → Definición de @font-face para tipografías del proyecto
     │   ├── tailwind.css      → Entry de Tailwind v4: @import 'tailwindcss' + source scan + tw-animate-css
     │   └── theme.css         → Sistema de diseño: 40+ tokens CSS (colores oklch, radios, tipografía, dark mode)
+    │
+    ├── test/
+    │   └── setup.ts          → Configuración global de pruebas (JSDOM, testing-library)
+    │
+    ├── tests/                → Batería de 38 tests automatizados
+    │   ├── gameUtils.test.ts → Pruebas de lógica de juegos (17 tests)
+    │   ├── stats.test.ts     → Pruebas de cálculo de estadísticas (9 tests)
+    │   ├── Pin.test.tsx      → Pruebas de validación de PIN y seguridad (8 tests)
+    │   └── ProtectedRoute.test.tsx → Pruebas de control de acceso a rutas (4 tests)
     │
     └── app/
         ├── App.tsx           → Componente raíz: <RouterProvider router={router} />
@@ -89,7 +100,7 @@ menteactiva/
         │       ├── tooltip.tsx        ├── use-mobile.ts       └── utils.ts (cn helper)
         │
         ├── lib/
-        │   └── supabase.ts          → createClient(VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
+        │   └── supabase.ts          → createClient para conexión con Backend
         │
         ├── pages/
         │   ├── Acceso.tsx           → Selección de perfil por avatar (grid responsive 2-3 cols)
@@ -105,6 +116,7 @@ menteactiva/
         │   └── Informacion.tsx      → Página informativa sobre la plataforma
         │
         └── utils/
+            ├── gameUtils.ts         → Lógica pura de juegos (generación de mazos, opciones, barajado)
             ├── users.ts             → CRUD completo de perfiles en Supabase (tabla 'users')
             ├── stats.ts             → Registro y consulta de sesiones (tabla 'sessions')
             └── avatars.ts           → Catálogo de 6 avatares con emoji, label y bgColor
@@ -136,7 +148,14 @@ menteactiva/
 | `/cuidador` | `PanelCuidador` | Sí | Panel de seguimiento para familiares |
 | `/informacion` | `Informacion` | No | Información sobre la plataforma |
 
-Todas las rutas son hijas de `Layout`, que actúa como wrapper con header, navegación y footer persistentes. Las rutas protegidas usan `<ProtectedRoute>` que verifica `getAuthenticatedUser()` y redirige a `/acceso` si no hay sesión activa.
+---
+
+## CALIDAD Y PRUEBAS (QA):
+
+Se ha implementado una batería de **38 tests automatizados** mediante **Vitest**, garantizando que la lógica de negocio funcione independientemente de la interfaz:
+- **Game Logic (17 tests)**: Verificación de barajado, generación de mazos de memoria y problemas de cálculo.
+- **Stats & Progress (9 tests)**: Verificación de niveles de experiencia y KPIs.
+- **Security & UI (12 tests)**: Validación de PIN (bcrypt) y control de acceso a rutas privadas.
 
 ---
 
