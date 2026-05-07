@@ -31,7 +31,6 @@ menteactiva/
 ├── index.html                → Punto de entrada HTML (lang="es", favicon SVG, #root)
 ├── package.json              → Nombre: "menteactiva", versión 0.0.1, scripts dev/build/preview/test
 ├── package-lock.json         → Lockfile de dependencias (~204KB)
-├── postcss.config.mjs        → Vacío: Tailwind v4 gestiona PostCSS automáticamente
 ├── tsconfig.json             → Target ESNext, strict: true, JSX react-jsx, alias @/ → src/
 ├── tsconfig.node.json        → Configuración aislada para vite.config.ts (Bundler resolution)
 ├── vercel.json               → Rewrites: todas las rutas → /index.html (SPA routing)
@@ -44,13 +43,6 @@ menteactiva/
 │   ├── img_inicio.jpg        → Imagen hero de la página de inicio (~365KB)
 │   ├── info_img.jpg          → Imagen para la sección de información (~2MB)
 │   └── menteactiva-favicon.svg → Favicon SVG del proyecto
-│
-├── services/
-│   └── sessions.ts           → Versión legacy de guardado de sesiones (saveSessionDB, getUserSessions)
-│
-├── dist/                     → Carpeta de build de producción (generada por `vite build`)
-│   ├── index.html            → HTML compilado
-│   └── assets/               → JS/CSS optimizados y hasheados
 │
 └── src/
     ├── main.tsx              → Punto de entrada React: ReactDOM.createRoot + StrictMode + imports de CSS
