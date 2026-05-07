@@ -40,7 +40,7 @@ describe('Componente Pin (Lógica de Interfaz)', () => {
   });
 
   it('debe fallar la validación si el PIN es incorrecto', () => {
-    const enteredPin = '0000';
+    const enteredPin: string = '0000';
     const isValid = enteredPin === '1234'; 
     expect(isValid).toBe(false);
   });
