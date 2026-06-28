@@ -11,11 +11,6 @@ import {
   X,
   ChevronRight,
   LogOut,
-  Mail,
-  Phone,
-  Instagram,
-  Twitter,
-  ExternalLink,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import {

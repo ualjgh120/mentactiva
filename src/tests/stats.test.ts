@@ -1,66 +1,104 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getStats, saveSession, clearStats } from '../app/utils/stats';
 
-// Simulamos los datos de sesiones para los tests de lógica
-const mockSessions = [
-  { id: '1', score: 80, exercise: 'memoria-visual', created_at: '2026-05-01T10:00:00Z' },
-  { id: '2', score: 100, exercise: 'calculo', created_at: '2026-05-01T11:00:00Z' },
-  { id: '3', score: 60, exercise: 'memoria-visual', created_at: '2026-05-02T10:00:00Z' },
-];
+const mockFrom = vi.fn();
 
-describe('Stats Service Logic', () => {
-  it('debe calcular la media de puntuación correctamente', () => {
-    const totalScore = mockSessions.reduce((sum, s) => sum + s.score, 0);
-    const average = totalScore / mockSessions.length;
-    expect(average).toBe(80);
+vi.mock('../app/lib/supabase', () => ({
+  supabase: {
+    from: (...args: unknown[]) => mockFrom(...args),
+  },
+}));
+
+describe('Stats Service (stats.ts real)', () => {
+  beforeEach(() => {
+    mockFrom.mockReset();
+    sessionStorage.clear();
   });
 
-  it('debe encontrar la puntuación máxima', () => {
-    const max = Math.max(...mockSessions.map(s => s.score));
-    expect(max).toBe(100);
+  it('getStats devuelve vacío si no hay userId (sin sesión)', async () => {
+    const result = await getStats(undefined);
+    expect(result).toEqual({ sessions: [], highScores: {} });
+    expect(mockFrom).not.toHaveBeenCalled();
   });
 
-  it('debe agrupar sesiones por tipo de ejercicio', () => {
-    const byType = mockSessions.reduce((acc, s) => {
-      acc[s.exercise] = (acc[s.exercise] || 0) + 1;
-      return acc;
-    }, {} as any);
-    expect(byType['memoria-visual']).toBe(2);
-    expect(byType['calculo']).toBe(1);
+  it('getStats mapea las filas de Supabase y calcula highScores con Math.max', async () => {
+    const rows = [
+      { exercise: 'calculo', exercise_name: 'Cálculo', score: 80, level: 2, duration: 5, created_at: '2026-01-01' },
+      { exercise: 'calculo', exercise_name: 'Cálculo', score: 100, level: 3, duration: 4, created_at: '2026-01-02' },
+      { exercise: 'memoria-visual', exercise_name: 'Memoria Visual', score: 60, level: 1, duration: 3, created_at: '2026-01-03' },
+    ];
+    mockFrom.mockReturnValue({
+      select: () => ({
+        eq: () => ({
+          order: () => Promise.resolve({ data: rows, error: null }),
+        }),
+      }),
+    });
+
+    const result = await getStats('user-1');
+
+    expect(result.sessions).toHaveLength(3);
+    expect(result.sessions[0]).toEqual({
+      exercise: 'calculo',
+      exerciseName: 'Cálculo',
+      score: 80,
+      level: 2,
+      duration: 5,
+      date: '2026-01-01',
+    });
+    expect(result.highScores['calculo']).toBe(100);
+    expect(result.highScores['memoria-visual']).toBe(60);
   });
 
-  it('debe identificar días activos únicos', () => {
-    const dates = mockSessions.map(s => s.created_at.slice(0, 10));
-    const uniqueDays = new Set(dates).size;
-    expect(uniqueDays).toBe(2);
+  it('getStats devuelve vacío si Supabase responde con error', async () => {
+    mockFrom.mockReturnValue({
+      select: () => ({
+        eq: () => ({
+          order: () => Promise.resolve({ data: null, error: new Error('fallo de red') }),
+        }),
+      }),
+    });
+
+    const result = await getStats('user-1');
+    expect(result).toEqual({ sessions: [], highScores: {} });
   });
 
-  it('debe manejar una lista de sesiones vacía sin errores', () => {
-    const empty: any[] = [];
-    const average = empty.length ? 100 : 0;
-    expect(average).toBe(0);
-  });
+  it('saveSession inserta la sesión con los campos correctos', async () => {
+    const insertMock = vi.fn().mockResolvedValue({ error: null });
+    mockFrom.mockReturnValue({ insert: insertMock });
 
-  it('debe ordenar sesiones por fecha descendente', () => {
-    const sorted = [...mockSessions].sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    await saveSession(
+      { exercise: 'calculo', exerciseName: 'Cálculo', score: 50, level: 1, duration: 3 },
+      'user-1'
     );
-    expect(sorted[0].id).toBe('3');
+
+    expect(mockFrom).toHaveBeenCalledWith('sessions');
+    expect(insertMock).toHaveBeenCalledWith({
+      user_id: 'user-1',
+      exercise: 'calculo',
+      exercise_name: 'Cálculo',
+      score: 50,
+      level: 1,
+      duration: 3,
+    });
   });
 
-  it('debe calcular el progreso hacia el siguiente nivel (umbral 10)', () => {
-    const sessionsCount = mockSessions.length;
-    const progress = (sessionsCount / 10) * 100;
-    expect(progress).toBe(30);
+  it('saveSession no llama a Supabase si no hay userId', async () => {
+    await saveSession(
+      { exercise: 'calculo', exerciseName: 'Cálculo', score: 50, level: 1, duration: 3 },
+      undefined
+    );
+    expect(mockFrom).not.toHaveBeenCalled();
   });
 
-  it('no debe exceder el 100% de progreso', () => {
-    const sessionsCount = 15;
-    const progress = Math.min((sessionsCount / 10) * 100, 100);
-    expect(progress).toBe(100);
-  });
+  it('clearStats elimina las sesiones del usuario indicado', async () => {
+    const eqMock = vi.fn().mockResolvedValue({ error: null });
+    const deleteMock = vi.fn(() => ({ eq: eqMock }));
+    mockFrom.mockReturnValue({ delete: deleteMock });
 
-  it('debe devolver 0% de progreso si no hay sesiones', () => {
-    const progress = (0 / 10) * 100;
-    expect(progress).toBe(0);
+    await clearStats('user-1');
+
+    expect(mockFrom).toHaveBeenCalledWith('sessions');
+    expect(eqMock).toHaveBeenCalledWith('user_id', 'user-1');
   });
 });

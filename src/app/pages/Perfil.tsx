@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import {
   Star, Layers, Clock, TrendingUp, Calendar,
   Puzzle, Brain, Calculator,
 } from 'lucide-react';
-import { getStats, type Session } from '../utils/stats';
-import { getAuthenticatedUser, type UserProfile } from '../utils/users';
+import type { Session } from '../utils/stats';
 import { getAvatarById } from '../utils/avatars';
+import { useUserStats } from '../hooks/useUserStats';
 
 const EXERCISE_ICONS: Record<string, ReactNode> = {
   'memoria-visual': <Puzzle style={{ width: 16, height: 16 }} />,
@@ -46,47 +45,7 @@ function getTotalMinutes(sessions: Session[]): number {
 }
 
 export function Perfil() {
-  const [activeUser, setActiveUser] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState<{ sessions: Session[]; highScores: Record<string, number> }>({
-    sessions: [],
-    highScores: {},
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadData() {
-      const user = await getAuthenticatedUser();
-
-      if (!user) {
-        setActiveUser(null);
-        setLoading(false);
-        return;
-      }
-
-      setActiveUser(user);
-
-      const userStats = await getStats(user.id);
-      setStats(userStats);
-
-      setLoading(false);
-    }
-
-    loadData();
-
-    const refresh = async () => {
-      const user = await getAuthenticatedUser();
-
-      if (user) {
-        setActiveUser(user);
-
-        const userStats = await getStats(user.id);
-        setStats(userStats);
-      }
-    };
-
-    window.addEventListener('focus', refresh);
-    return () => window.removeEventListener('focus', refresh);
-  }, []);
+  const { activeUser, stats, loading } = useUserStats();
 
   if (loading) {
     return null;

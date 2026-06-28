@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { ArrowLeft, Delete } from 'lucide-react';
 import {
     getSelectedUser,
@@ -28,38 +28,23 @@ export function Pin() {
         loadUser();
     }, []);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key >= '0' && e.key <= '9') {
-                void handleNumberClick(e.key);
-            } else if (e.key === 'Backspace') {
-                handleDelete();
-            }
-        };
+    const handleDelete = useCallback(() => {
+        setPin((prev) => prev.slice(0, -1));
+        setError('');
+    }, []);
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [pin, user]);
+    const handleNumberClick = useCallback(async (num: string) => {
+        if (!user) return;
 
-    if (loading) {
-        return null;
-    }
-
-    if (!user) {
-        return <Navigate to="/acceso" replace />;
-    }
-
-    const avatar = getAvatarById(user.avatar);
-
-    const handleNumberClick = async (num: string) => {
-        if (pin.length >= 4) return;
-
-        const newPin = pin + num;
-        setPin(newPin);
+        setPin((prev) => {
+            if (prev.length >= 4) return prev;
+            return prev + num;
+        });
         setError('');
 
-        if (newPin.length === 4) {
-            const isValid = await validateUserPin(user.id, newPin);
+        const currentPin = pin + num;
+        if (currentPin.length === 4) {
+            const isValid = await validateUserPin(user.id, currentPin);
 
             setTimeout(() => {
                 if (isValid) {
@@ -72,23 +57,36 @@ export function Pin() {
                 }
             }, 200);
         }
-    };
+    }, [user, pin, navigate]);
 
-    const handleDelete = () => {
-        setPin((prev) => prev.slice(0, -1));
-        setError('');
-    };
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key >= '0' && e.key <= '9') {
+                void handleNumberClick(e.key);
+            } else if (e.key === 'Backspace') {
+                handleDelete();
+            }
+        };
 
-    const handleBackToAccess = () => {
-        clearSelectedUser();
-        navigate('/acceso');
-    };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleNumberClick, handleDelete]);
+
+    if (loading) {
+        return null;
+    }
+
+    if (!user) {
+        return <Navigate to="/acceso" replace />;
+    }
+
+    const avatar = getAvatarById(user.avatar);
 
     return (
         <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
             <div className="max-w-md mx-auto px-4 sm:px-6 py-10">
                 <button
-                    onClick={handleBackToAccess}
+                    onClick={() => { clearSelectedUser(); navigate('/acceso'); }}
                     className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 transition-colors"
                 >
                     <ArrowLeft style={{ width: 18, height: 18 }} />

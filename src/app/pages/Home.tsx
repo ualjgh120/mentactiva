@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { 
-  Brain, Layers, Star, Heart, Shield, ArrowRight, PlayCircle,
+import {
+  Brain, Star, Heart, Shield, ArrowRight, PlayCircle,
   LayoutGrid, Target, Calculator, Sparkles
 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -152,7 +152,7 @@ export function Home() {
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {EXERCISES.map(({ to, icon: Icon, title, description, gradient, bgLight, badge, badgeColor }) => (
+            {EXERCISES.map(({ to, icon: Icon, title, description, gradient, badge, badgeColor }) => (
               <motion.div
                 key={to}
                 whileHover={{ y: -8 }}

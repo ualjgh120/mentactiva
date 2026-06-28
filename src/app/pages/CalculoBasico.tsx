@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowLeft, RotateCcw, CheckCircle, XCircle, Calculator, 
-  Sparkles, Brain, BarChart2, ChevronRight, Target
+import {
+  ArrowLeft, RotateCcw, CheckCircle, XCircle, Calculator,
+  Sparkles, Brain, ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
@@ -66,6 +66,10 @@ function generateProblem(difficulty: Difficulty): Problem {
 
 // La función generateOptions ahora se importa de ../utils/gameUtils
 
+function pickMessage(messages: string[]): string {
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
   facil: 'Fácil',
   medio: 'Medio',
@@ -118,13 +122,11 @@ export function CalculoBasico() {
     setIsCorrect(correct);
 
     if (correct) {
-      const msg = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
-      setFeedback(msg);
+      setFeedback(pickMessage(CORRECT_MSGS));
       setScore((s) => s + 1);
       if ((question + 1) % 5 === 0) confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
     } else {
-      const msg = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];
-      setFeedback(`${msg} ${problem.answer}`);
+      setFeedback(`${pickMessage(WRONG_MSGS)} ${problem.answer}`);
     }
 
     const nextQ = question + 1;

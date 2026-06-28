@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import {
-  Brain, Zap, Heart, Shield, BookOpen, Users, ArrowRight,
+  Brain, Zap, Heart, BookOpen, Users, ArrowRight,
   CheckCircle2, AlertCircle, Activity,
 } from 'lucide-react';
 import { ImageWithFallback } from '../components/common/ResponsiveImage';

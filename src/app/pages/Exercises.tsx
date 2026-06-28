@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { 
-  ArrowRight, Clock, BarChart2, Zap, User, Users, 
-  Puzzle, Activity, Calculator, Brain, Sparkles,
+import {
+  ArrowRight, Clock, BarChart2, User, Users,
+  Calculator, Brain, Sparkles,
   ChevronRight, Target, LayoutGrid
 } from 'lucide-react';
 import { motion } from 'motion/react';

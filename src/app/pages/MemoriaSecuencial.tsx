@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, Eye, MousePointer, Target, Sparkles, Brain, BarChart2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Eye, MousePointer, Target, Sparkles, Brain, BarChart2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';

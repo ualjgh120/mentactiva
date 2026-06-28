@@ -1,26 +1,63 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from '../app/components/ProtectedRoute';
+import * as users from '../app/utils/users';
 
-describe('ProtectedRoute (Seguridad de Rutas)', () => {
-  it('debe permitir el acceso si hay un usuario autenticado', () => {
-    const isAuthenticated = true;
-    const canAccess = isAuthenticated ? 'render_child' : 'redirect';
-    expect(canAccess).toBe('render_child');
+vi.mock('../app/utils/users', () => ({
+  getAuthenticatedUser: vi.fn(),
+}));
+
+const fakeUser = {
+  id: 'u1',
+  name: 'Ana',
+  pin: 'hash',
+  avatar: 'abuela-1',
+  createdAt: '2026-01-01',
+};
+
+function renderProtected() {
+  return render(
+    <MemoryRouter initialEntries={['/perfil']}>
+      <Routes>
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <div>CHILD-OK</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/acceso" element={<div>ACCESO-OK</div>} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
+
+describe('ProtectedRoute (componente real)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('debe denegar el acceso y redirigir si no hay sesión', () => {
-    const isAuthenticated = false;
-    const canAccess = isAuthenticated ? 'render_child' : 'redirect';
-    expect(canAccess).toBe('redirect');
+  it('no muestra nada mientras comprueba la sesión', () => {
+    vi.mocked(users.getAuthenticatedUser).mockReturnValue(new Promise(() => {}));
+
+    renderProtected();
+
+    expect(screen.queryByText('CHILD-OK')).not.toBeInTheDocument();
+    expect(screen.queryByText('ACCESO-OK')).not.toBeInTheDocument();
   });
 
-  it('debe detectar una sesión expirada o corrupta', () => {
-    const sessionData = "null";
-    const isAuthenticated = sessionData !== "null" && sessionData !== null;
-    expect(isAuthenticated).toBe(false);
+  it('renderiza el contenido protegido si hay una sesión autenticada', async () => {
+    vi.mocked(users.getAuthenticatedUser).mockResolvedValue(fakeUser);
+    renderProtected();
+    await waitFor(() => expect(screen.getByText('CHILD-OK')).toBeInTheDocument());
   });
 
-  it('debe redirigir a /acceso por defecto en caso de fallo', () => {
-    const targetRoute = '/acceso';
-    expect(targetRoute).toBe('/acceso');
+  it('redirige a /acceso si no hay sesión autenticada', async () => {
+    vi.mocked(users.getAuthenticatedUser).mockResolvedValue(null);
+    renderProtected();
+    await waitFor(() => expect(screen.getByText('ACCESO-OK')).toBeInTheDocument());
+    expect(screen.queryByText('CHILD-OK')).not.toBeInTheDocument();
   });
 });

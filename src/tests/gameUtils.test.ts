@@ -21,6 +21,7 @@ describe('Game Logic (MenteActiva)', () => {
       expect(data).toEqual(original);
     });
     
+    
     it('debe producir resultados diferentes en ejecuciones sucesivas', () => {
       const res1 = shuffleArray(data);
       const res2 = shuffleArray(data);

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, LayoutGrid, Brain, Sparkles, Clock, BarChart2, ChevronRight, MousePointer, CheckCircle, Target } from 'lucide-react';
+import { ArrowLeft, RotateCcw, LayoutGrid, Brain, ChevronRight, CheckCircle, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';
@@ -28,6 +28,7 @@ export function MemoriaVisual() {
 
   useEffect(() => {
     if (gameStarted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCards(createDeck(config.pairCount, EMOJIS));
       setSelectedIds([]);
       setMoves(0);
@@ -46,6 +47,7 @@ export function MemoriaVisual() {
 
     if (!firstCard || !secondCard) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsChecking(true);
 
     if (firstCard.imageId === secondCard.imageId) {
@@ -98,6 +100,7 @@ export function MemoriaVisual() {
 
       return () => clearTimeout(timeout);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds, cards, matches, config.pairCount, gameStarted, level]);
 
   const startGame = (newLevel: number) => {

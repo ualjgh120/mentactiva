@@ -1,7 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig, type UserConfig } from 'vite'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { defineConfig, type PluginOption, type UserConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
@@ -12,19 +9,11 @@ interface VitestConfigExport extends UserConfig {
   test?: InlineConfig
 }
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 export default defineConfig({
   plugins: [
-    react() as any,
-    tailwindcss() as any,
+    react() as PluginOption,
+    tailwindcss() as PluginOption,
   ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
   // Configuración de los Tests
   test: {
     environment: 'jsdom',

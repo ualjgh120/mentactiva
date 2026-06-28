@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { Users, TrendingUp, Calendar, Clock, Activity, ArrowRight } from 'lucide-react';
-import { getStats, type Session } from '../utils/stats';
-import { getAuthenticatedUser, type UserProfile } from '../utils/users';
+import type { Session } from '../utils/stats';
+import { useUserStats } from '../hooks/useUserStats';
 
 function buildWeeklyData(sessions: Session[]) {
   return Array.from({ length: 7 }, (_, i) => {
@@ -46,47 +45,7 @@ function formatDate(iso: string) {
 }
 
 export function PanelCuidador() {
-  const [activeUser, setActiveUser] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState<{ sessions: Session[]; highScores: Record<string, number> }>({
-    sessions: [],
-    highScores: {},
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadData() {
-      const user = await getAuthenticatedUser();
-
-      if (!user) {
-        setActiveUser(null);
-        setLoading(false);
-        return;
-      }
-
-      setActiveUser(user);
-
-      const userStats = await getStats(user.id);
-      setStats(userStats);
-
-      setLoading(false);
-    }
-
-    loadData();
-
-    const refresh = async () => {
-      const user = await getAuthenticatedUser();
-
-      if (user) {
-        setActiveUser(user);
-
-        const userStats = await getStats(user.id);
-        setStats(userStats);
-      }
-    };
-
-    window.addEventListener('focus', refresh);
-    return () => window.removeEventListener('focus', refresh);
-  }, []);
+  const { activeUser, stats, loading } = useUserStats();
 
   if (loading) {
     return null;
