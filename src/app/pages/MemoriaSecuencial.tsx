@@ -4,6 +4,7 @@ import { ArrowLeft, RotateCcw, Eye, MousePointer, Target, Sparkles, Brain, BarCh
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';
+import { GamePhase } from '../types/game';
 
 // ── Colours ──────────────────────────────────────────────────────────────────
 const BUTTONS = [
@@ -12,8 +13,6 @@ const BUTTONS = [
   { id: 2, label: 'Amarillo', normal: '#F59E0B', lit: '#FDE68A', text: '#78350f' },
   { id: 3, label: 'Rojo', normal: '#EF4444', lit: '#FCA5A5', text: '#7f1d1d' },
 ];
-
-type Phase = 'idle' | 'showing' | 'player' | 'correct' | 'wrong';
 
 const STEP_MS = 850;
 const ON_MS = 580;
@@ -29,13 +28,15 @@ const LEVEL_MSG = [
 
 export function MemoriaSecuencial() {
   const [sequence, setSequence] = useState<number[]>([]);
-  const [phase, setPhase] = useState<Phase>('idle');
+  const [phase, setPhase] = useState<GamePhase>(GamePhase.IDLE);
   const [activeBtn, setActiveBtn] = useState<number | null>(null);
   const [playerPos, setPlayerPos] = useState(0);
   const [level, setLevel] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [statusMsg, setStatusMsg] = useState('Pulsa "Comenzar" para jugar');
   const [gameStarted, setGameStarted] = useState(false);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function MemoriaSecuencial() {
 
   const playSequence = useCallback((seq: number[]) => {
     clearTimers();
-    setPhase('showing');
+    setPhase(GamePhase.SHOWING);
     setStatusMsg('Observa la secuencia…');
     setActiveBtn(null);
     setPlayerPos(0);
@@ -63,7 +64,7 @@ export function MemoriaSecuencial() {
     });
 
     const tEnd = setTimeout(() => {
-      setPhase('player');
+      setPhase(GamePhase.PLAYER);
       setStatusMsg('¡Tu turno! Repite la secuencia');
     }, LEAD_MS + seq.length * STEP_MS);
 
@@ -77,8 +78,9 @@ export function MemoriaSecuencial() {
     setSequence(seq);
     setLevel(1);
     setPlayerPos(0);
-    setPhase('idle');
+    setPhase(GamePhase.IDLE);
     setGameStarted(true);
+    setStartTime(Date.now());
     playSequence(seq);
   }, [playSequence]);
 
@@ -102,7 +104,7 @@ export function MemoriaSecuencial() {
   }, [playSequence]);
 
   const handleButtonPress = useCallback(async (btnId: number) => {
-    if (phase !== 'player') return;
+    if (phase !== GamePhase.PLAYER) return;
 
     setActiveBtn(btnId);
     const t = setTimeout(() => setActiveBtn(null), 220);
@@ -111,7 +113,7 @@ export function MemoriaSecuencial() {
     const expected = sequence[playerPos];
 
     if (btnId !== expected) {
-      setPhase('wrong');
+      setPhase(GamePhase.WRONG);
 
       const finalScore = sequence.length - 1;
       if (finalScore > highScore) {
@@ -120,12 +122,15 @@ export function MemoriaSecuencial() {
 
       setStatusMsg(`Incorrecto. Llegaste al nivel ${sequence.length}. ¡Buen intento! 😊`);
 
+      const endTime = Date.now();
+      const durationSec = Math.max(1, Math.round((endTime - startTime) / 1000));
+
       await saveSession({
         exercise: 'memoria-secuencial',
         exerciseName: 'Memoria Secuencial',
         score: finalScore,
         level: sequence.length,
-        duration: 1,
+        duration: durationSec,
       });
 
       return;
@@ -134,12 +139,12 @@ export function MemoriaSecuencial() {
     const newPos = playerPos + 1;
 
     if (newPos === sequence.length) {
-      setPhase('correct');
+      setPhase(GamePhase.CORRECT);
       advanceLevel(sequence);
     } else {
       setPlayerPos(newPos);
     }
-  }, [phase, sequence, playerPos, highScore, advanceLevel]);
+  }, [phase, sequence, playerPos, highScore, advanceLevel, startTime]);
 
   if (!gameStarted) {
     return (
@@ -225,7 +230,13 @@ export function MemoriaSecuencial() {
       <div className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => setGameStarted(false)}
+            onClick={() => {
+              if (phase !== GamePhase.WRONG) {
+                setShowExitConfirm(true);
+              } else {
+                setGameStarted(false);
+              }
+            }}
             className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-all font-semibold group"
           >
             <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-100 group-hover:bg-slate-50 group-hover:border-slate-200 transition-all">
@@ -383,6 +394,38 @@ export function MemoriaSecuencial() {
           </ul>
         </div>
       </div>
+
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-[2rem] p-8 max-w-md w-full border border-slate-100 shadow-2xl text-center"
+          >
+            <h3 className="text-slate-900 mb-2 font-extrabold text-2xl">¿Seguro que quieres salir?</h3>
+            <p className="text-slate-500 mb-8 leading-relaxed">
+              Si sales ahora, no se guardará el progreso de esta partida.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="px-6 py-3.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold transition-all text-base flex-1"
+              >
+                Continuar
+              </button>
+              <button
+                onClick={() => {
+                  setShowExitConfirm(false);
+                  setGameStarted(false);
+                }}
+                className="px-6 py-3.5 rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold transition-all text-base flex-1"
+              >
+                Salir
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

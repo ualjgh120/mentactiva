@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RotateCcw, LayoutGrid, Brain, ChevronRight, CheckCircle, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';
 import { createDeck, CardItem } from '../utils/gameUtils';
+import { GamePhase } from '../types/game';
 
 const EMOJIS = ['🍎', '🐶', '🚗', '🌙', '🎈', '⭐', '🍀', '🎵'];
 
@@ -15,6 +16,7 @@ function getConfig(level: number) {
 }
 
 export function MemoriaVisual() {
+  const navigate = useNavigate();
   const [level, setLevel] = useState(1);
   const [cards, setCards] = useState<CardItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -23,6 +25,9 @@ export function MemoriaVisual() {
   const [isChecking, setIsChecking] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [phase, setPhase] = useState<GamePhase>(GamePhase.SELECT);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const config = useMemo(() => getConfig(level), [level]);
 
@@ -67,6 +72,7 @@ export function MemoriaVisual() {
 
         if (newMatches === config.pairCount) {
           setCompleted(true);
+          setPhase(GamePhase.FINISHED);
 
           confetti({
             particleCount: 100,
@@ -74,12 +80,15 @@ export function MemoriaVisual() {
             origin: { y: 0.6 },
           });
 
+          const endTime = Date.now();
+          const durationSec = Math.max(1, Math.round((endTime - startTime) / 1000));
+
           await saveSession({
             exercise: 'memoria-visual',
             exerciseName: 'Memoria Visual',
             score: config.pairCount,
             level,
-            duration: 1,
+            duration: durationSec,
           });
         }
       }, 700);
@@ -101,11 +110,13 @@ export function MemoriaVisual() {
       return () => clearTimeout(timeout);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedIds, cards, matches, config.pairCount, gameStarted, level]);
+  }, [selectedIds, cards, matches, config.pairCount, gameStarted, level, startTime]);
 
   const startGame = (newLevel: number) => {
     setLevel(newLevel);
     setGameStarted(true);
+    setPhase(GamePhase.PLAYING);
+    setStartTime(Date.now());
   };
 
   const restartGame = () => {
@@ -115,6 +126,8 @@ export function MemoriaVisual() {
     setMatches(0);
     setIsChecking(false);
     setCompleted(false);
+    setPhase(GamePhase.PLAYING);
+    setStartTime(Date.now());
   };
 
   const handleCardClick = (card: CardItem) => {
@@ -196,15 +209,21 @@ export function MemoriaVisual() {
     <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-6 mb-10">
-          <Link
-            to="/ejercicios"
+          <button
+            onClick={() => {
+              if (phase !== GamePhase.FINISHED) {
+                setShowExitConfirm(true);
+              } else {
+                navigate('/ejercicios');
+              }
+            }}
             className="group flex items-center gap-3 text-slate-500 hover:text-slate-900 transition-all font-bold"
           >
             <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 group-hover:text-blue-600 transition-all">
               <ArrowLeft style={{ width: 20, height: 20 }} />
             </div>
             Salir
-          </Link>
+          </button>
 
           <div className="flex items-center gap-2 bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
@@ -287,6 +306,39 @@ export function MemoriaVisual() {
           </ul>
         </div>
       </div>
+
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-[2rem] p-8 max-w-md w-full border border-slate-100 shadow-2xl text-center"
+          >
+            <h3 className="text-slate-900 mb-2 font-extrabold text-2xl">¿Seguro que quieres salir?</h3>
+            <p className="text-slate-500 mb-8 leading-relaxed">
+              Si sales ahora, no se guardará el progreso de esta partida.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="px-6 py-3.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold transition-all text-base flex-1"
+              >
+                Continuar
+              </button>
+              <button
+                onClick={() => {
+                  setShowExitConfirm(false);
+                  setGameStarted(false);
+                  setPhase(GamePhase.SELECT);
+                }}
+                className="px-6 py-3.5 rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold transition-all text-base flex-1"
+              >
+                Salir
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

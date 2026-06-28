@@ -8,12 +8,12 @@ import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { saveSession } from '../utils/stats';
 import { generateOptions } from '../utils/gameUtils';
+import { GamePhase, Question } from '../types/game';
 
 type Difficulty = 'facil' | 'medio' | 'dificil';
 type Operator = '+' | '−' | '×';
-type Phase = 'select' | 'playing' | 'finished';
 
-interface Problem {
+interface CalculoQuestion extends Question {
   num1: number;
   num2: number;
   operator: Operator;
@@ -23,7 +23,7 @@ interface Problem {
 
 const TOTAL_QUESTIONS = 10;
 
-function generateProblem(difficulty: Difficulty): Problem {
+function generateProblem(difficulty: Difficulty): CalculoQuestion {
   let num1: number, num2: number, operator: Operator, answer: number;
 
   if (difficulty === 'facil') {
@@ -61,7 +61,8 @@ function generateProblem(difficulty: Difficulty): Problem {
     }
   }
 
-  return { num1, num2, operator, answer, display: `${num1} ${operator} ${num2}` };
+  const id = `${num1}-${operator}-${num2}`;
+  return { id, text: `${num1} ${operator} ${num2}`, num1, num2, operator, answer, display: `${num1} ${operator} ${num2}` };
 }
 
 // La función generateOptions ahora se importa de ../utils/gameUtils
@@ -84,9 +85,9 @@ const CORRECT_MSGS = ['¡Correcto! 🎉', '¡Muy bien! ⭐', '¡Excelente! 🌟'
 const WRONG_MSGS = ['Casi… La respuesta era', 'No pasa nada. Era', '¡Sigue intentándolo! Era'];
 
 export function CalculoBasico() {
-  const [phase, setPhase] = useState<Phase>('select');
+  const [phase, setPhase] = useState<GamePhase>(GamePhase.SELECT);
   const [difficulty, setDifficulty] = useState<Difficulty>('facil');
-  const [problem, setProblem] = useState<Problem | null>(null);
+  const [problem, setProblem] = useState<CalculoQuestion | null>(null);
   const [options, setOptions] = useState<number[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -94,6 +95,8 @@ export function CalculoBasico() {
   const [question, setQuestion] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const nextQuestion = useCallback((diff: Difficulty = difficulty) => {
     const p = generateProblem(diff);
@@ -110,7 +113,8 @@ export function CalculoBasico() {
     setScore(0);
     setQuestion(0);
     nextQuestion(diff);
-    setPhase('playing');
+    setStartTime(Date.now());
+    setPhase(GamePhase.PLAYING);
   };
 
   const handleAnswer = (opt: number) => {
@@ -132,14 +136,17 @@ export function CalculoBasico() {
     const nextQ = question + 1;
     setTimeout(async () => {
       if (nextQ >= TOTAL_QUESTIONS) {
-        setPhase('finished');
+        setPhase(GamePhase.FINISHED);
+
+        const endTime = Date.now();
+        const durationSec = Math.max(1, Math.round((endTime - startTime) / 1000));
 
         await saveSession({
           exercise: 'calculo',
           exerciseName: 'Cálculo Mental',
           score: correct ? score + 1 : score,
           level: difficulty === 'facil' ? 1 : difficulty === 'medio' ? 2 : 3,
-          duration: 1,
+          duration: durationSec,
         });
 
         if ((correct ? score + 1 : score) >= 8) {
@@ -153,7 +160,7 @@ export function CalculoBasico() {
   };
 
   // ── Select screen ────────────────────────────────────────────────────────
-  if (phase === 'select') {
+  if (phase === GamePhase.SELECT) {
     return (
       <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden">
         {/* Decorative Background Elements */}
@@ -252,7 +259,7 @@ export function CalculoBasico() {
   }
 
   // ── Finished screen ──────────────────────────────────────────────────────
-  if (phase === 'finished') {
+  if (phase === GamePhase.FINISHED) {
     const pct = Math.round((score / TOTAL_QUESTIONS) * 100);
     return (
       <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden">
@@ -327,7 +334,7 @@ export function CalculoBasico() {
               Repetir nivel
             </button>
             <button
-              onClick={() => setPhase('select')}
+              onClick={() => setPhase(GamePhase.SELECT)}
               className="flex items-center justify-center gap-3 px-8 py-5 rounded-2xl border border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 transition-all font-bold bg-white/50"
               style={{ fontSize: 18 }}
             >
@@ -347,7 +354,7 @@ export function CalculoBasico() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => setPhase('select')}
+            onClick={() => setShowExitConfirm(true)}
             className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-all font-semibold group"
           >
             <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-100 group-hover:bg-slate-50 group-hover:border-amber-100 transition-all">
@@ -486,6 +493,38 @@ export function CalculoBasico() {
           </ul>
         </div>
       </div>
+
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-[2rem] p-8 max-w-md w-full border border-slate-100 shadow-2xl text-center"
+          >
+            <h3 className="text-slate-900 mb-2 font-extrabold text-2xl">¿Seguro que quieres salir?</h3>
+            <p className="text-slate-500 mb-8 leading-relaxed">
+              Si sales ahora, no se guardará el progreso de esta partida.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="px-6 py-3.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold transition-all text-base flex-1"
+              >
+                Continuar
+              </button>
+              <button
+                onClick={() => {
+                  setShowExitConfirm(false);
+                  setPhase(GamePhase.SELECT);
+                }}
+                className="px-6 py-3.5 rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold transition-all text-base flex-1"
+              >
+                Salir
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
