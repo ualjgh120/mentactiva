@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, RotateCcw, LayoutGrid, Brain, ChevronRight, CheckCircle, Target } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
@@ -109,7 +109,7 @@ export function MemoriaVisual() {
 
       return () => clearTimeout(timeout);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds, cards, matches, config.pairCount, gameStarted, level, startTime]);
 
   const startGame = (newLevel: number) => {
@@ -261,7 +261,7 @@ export function MemoriaVisual() {
                 {!showFront && (
                   <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[length:10px_10px]" />
                 )}
-                
+
                 <span className="relative z-10" style={{ fontSize: showFront ? '2.5rem' : '1.5rem', fontWeight: 800, color: showFront ? '#0F172A' : '#FFFFFF' }}>
                   {showFront ? card.imageId : '?'}
                 </span>
